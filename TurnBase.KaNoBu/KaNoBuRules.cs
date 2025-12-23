@@ -261,24 +261,14 @@ public class KaNoBuRules : IGameRules<KaNoBuInitModel, KaNoBuInitResponseModel, 
 
         var winner = this.battle(from, to);
 
-        if (winner == null)
+        if (winner != null)
         {
-            return new KaNoBuMoveNotificationModel(playerMove,
-                new List<IFigure> { from },
-                new List<IFigure> { to },
-                new List<IFigure>()
-            );
+            rotatedField.trySet(playerMove.From, null);
+            rotatedField.trySet(playerMove.To, null);
+            rotatedField.trySet(playerMove.To, winner);
         }
 
-        rotatedField.trySet(playerMove.From, null);
-        rotatedField.trySet(playerMove.To, null);
-        rotatedField.trySet(playerMove.To, winner);
-
-        return new KaNoBuMoveNotificationModel(playerMove,
-            new List<IFigure> { from },
-            new List<IFigure> { to },
-            new List<IFigure> { winner }
-        );
+        return new KaNoBuMoveNotificationModel(playerMove, from, to, winner);
     }
 
     public List<int>? findWinners(IField mainField)

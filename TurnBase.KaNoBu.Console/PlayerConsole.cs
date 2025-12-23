@@ -186,33 +186,19 @@ public class PlayerConsole : IPlayer<KaNoBuInitModel, KaNoBuInitResponseModel, K
 
         this.showMessage($"Player {playerNumber} '{this.players[playerNumber]}' move from {move.From} to {move.To}.");
 
-        var s = new StringBuilder();
-        s.AppendLine("Battle:");
-        if (battle.attackers != null)
+        if (battle.battle != null)
         {
-            s.AppendLine("  attackers:");
-            s.AppendJoin("\n", battle.attackers.Select(a => $"    {this.players[a.PlayerId]}.{getShipResource(a)}"));
-            s.AppendLine();
-        }
+            var s = new StringBuilder();
+            s.AppendLine("Battle:");
+            s.AppendLine($"  attacker: {this.players[battle.battle.Value.Item1.PlayerId]}.{getShipResource(battle.battle.Value.Item1)}");
+            s.AppendLine($"  defender: {this.players[battle.battle.Value.Item2.PlayerId]}.{getShipResource(battle.battle.Value.Item2)}");
+            if (battle.battle.Value.Item3 != null)
+                s.AppendLine($"  winner: {this.players[battle.battle.Value.Item3.PlayerId]}.{getShipResource(battle.battle.Value.Item3)}");
+            else
+                s.AppendLine("  winner: None (draw)");
 
-        if (battle.defenders != null){
-            s.AppendLine("\n  defenders:");
-            s.AppendJoin("\n", battle.defenders.Select(a => $"    {this.players[a.PlayerId]}.{getShipResource(a)}"));
-            s.AppendLine();
+            this.showMessage(s.ToString());
         }
-
-        if (battle.winners == null || battle.winners.Count == 0)
-        {
-            s.AppendLine("\n  winner: None (draw)");
-        }
-        else
-        {
-            s.AppendLine("\n  winner:");
-            s.AppendJoin("\n", battle.winners.Select(a => $"    {this.players[a.PlayerId]}.{getShipResource(a)}"));
-            s.AppendLine();
-        }
-
-        this.showMessage(s.ToString());
     }
 
     public void gameFinished(List<int> winners)

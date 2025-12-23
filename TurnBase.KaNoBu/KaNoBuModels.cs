@@ -55,7 +55,7 @@ public class KaNoBuMoveResponseModel
         MAKE_TURN,
         SKIP_TURN
     }
-    
+
     public readonly MoveStatus Status;
     public readonly Point From;
     public readonly Point To;
@@ -63,22 +63,18 @@ public class KaNoBuMoveResponseModel
 
 public class KaNoBuMoveNotificationModel
 {
-    public KaNoBuMoveNotificationModel(KaNoBuMoveResponseModel move, List<IFigure>? attackers, List<IFigure>? defenders, List<IFigure>? winners)
+    public KaNoBuMoveNotificationModel(KaNoBuMoveResponseModel move, IFigure attacker, IFigure defender, IFigure? winner)
     {
         this.move = move;
-        this.attackers = attackers;
-        this.defenders = defenders;
-        this.winners = winners;
+        this.battle = (attacker, defender, winner);
     }
+
     public KaNoBuMoveNotificationModel(KaNoBuMoveResponseModel move)
     {
         this.move = move;
-        this.attackers = null;
-        this.defenders = null;
-        this.winners = null;
+        this.battle = null;
     }
+
     public readonly KaNoBuMoveResponseModel move;
-    public readonly List<IFigure>? attackers;
-    public readonly List<IFigure>? defenders;
-    public readonly List<IFigure>? winners;
+    public readonly (IFigure, IFigure, IFigure?)? battle;
 }
