@@ -26,6 +26,11 @@ public class KaNoBuRules : IGameRules<KaNoBuInitModel, KaNoBuInitResponseModel, 
         return 2;
     }
 
+    public int getMinPlayersCount()
+    {
+        return 2;
+    }
+
     public IPlayerRotator getRotator()
     {
         return new PlayerRotatorNormal
