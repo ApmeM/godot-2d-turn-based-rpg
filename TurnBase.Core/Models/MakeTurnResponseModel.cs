@@ -1,11 +1,18 @@
 namespace TurnBase.Core;
 
 public class MakeTurnResponseModel<TMoveResponseModel> {
-    public MakeTurnResponseModel(bool isSuccess, TMoveResponseModel move )
+    public MakeTurnResponseModel(TMoveResponseModel move)
     {
-        this.isSuccess = isSuccess;
-        this.move = move;
+        this.IsSuccess = true;
+        this.Response = move;
     }
-    public TMoveResponseModel move;
-    public bool isSuccess;
+    
+    public MakeTurnResponseModel()
+    {
+        this.IsSuccess = false;
+        this.Response = default;
+    }
+
+    public TMoveResponseModel? Response;
+    public bool IsSuccess;
 }

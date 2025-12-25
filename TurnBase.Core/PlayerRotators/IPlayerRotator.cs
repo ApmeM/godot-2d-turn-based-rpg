@@ -2,9 +2,11 @@ namespace TurnBase.Core;
 
 public interface IPlayerRotator
 {
-    public void MoveNext();
+    public struct PlayerRotationResult
+    {
+        public bool IsNewTurn;
+        public List<IPlayer> PlayersInTurn;
+    }
 
-    public int GetCurrent();
-
-    public int Size { get; set; }
+    public PlayerRotationResult MoveNext(List<IPlayer>? current, List<IPlayer> allPlayers);
 }

@@ -15,33 +15,22 @@ public class KaNoBuPlayerEasy : IPlayer<KaNoBuInitModel, KaNoBuInitResponseModel
         var ships = new List<IFigure>(model.Request.AvailableFigures);
         var preparedField = new Field2D(model.Request.Width, model.Request.Height);
         this.generateField(preparedField, ships);
-        return new InitResponseModel<KaNoBuInitResponseModel>
-        {
-            IsSuccess = true,
-            Name = name,
-            Response = new KaNoBuInitResponseModel(preparedField)
-        };
+        return new InitResponseModel<KaNoBuInitResponseModel>(name, new KaNoBuInitResponseModel(preparedField));
     }
 
     public async Task<MakeTurnResponseModel<KaNoBuMoveResponseModel>> MakeTurn(MakeTurnModel<KaNoBuMoveModel> model)
     {
         await Task.Delay(0);
-        var from = this.findAllMovement(model.Model.Field);
+        var from = this.findAllMovement(model.Request.Field);
 
         if (from == null || from.Count == 0)
         {
-            return new MakeTurnResponseModel<KaNoBuMoveResponseModel>(
-                true,
-                new KaNoBuMoveResponseModel(KaNoBuMoveResponseModel.MoveStatus.SKIP_TURN)
-            );
+            return new MakeTurnResponseModel<KaNoBuMoveResponseModel>(new KaNoBuMoveResponseModel(KaNoBuMoveResponseModel.MoveStatus.SKIP_TURN));
         }
 
         int movementNum = r.Next(from.Count);
 
-        return new MakeTurnResponseModel<KaNoBuMoveResponseModel>(
-                true,
-                from[movementNum]
-            );
+        return new MakeTurnResponseModel<KaNoBuMoveResponseModel>(from[movementNum]);
     }
 
     private List<KaNoBuMoveResponseModel> findAllMovement(IField field)

@@ -68,7 +68,7 @@ public class PlayerConsole : IPlayer<KaNoBuInitModel, KaNoBuInitResponseModel, K
 
     public async Task<MakeTurnResponseModel<KaNoBuMoveResponseModel>> MakeTurn(MakeTurnModel<KaNoBuMoveModel> makeTurnModel)
     {
-        var field = makeTurnModel.Model.Field;
+        var field = makeTurnModel.Request.Field;
         this.showMessage(showField(field));
         this.showMessage("Select ship to move.");
         Point? from = null;
@@ -85,7 +85,6 @@ public class PlayerConsole : IPlayer<KaNoBuInitModel, KaNoBuInitResponseModel, K
         }
 
         return new MakeTurnResponseModel<KaNoBuMoveResponseModel>(
-            true,
             new KaNoBuMoveResponseModel(
                 KaNoBuMoveResponseModel.MoveStatus.MAKE_TURN,
                 from.Value,
@@ -101,12 +100,7 @@ public class PlayerConsole : IPlayer<KaNoBuInitModel, KaNoBuInitResponseModel, K
 
         await this.fillField(preparedField, ships);
 
-        return new InitResponseModel<KaNoBuInitResponseModel>
-        {
-            IsSuccess = true,
-            Name = name,
-            Response = new KaNoBuInitResponseModel(preparedField)
-        };
+        return new InitResponseModel<KaNoBuInitResponseModel>(name, new KaNoBuInitResponseModel(preparedField));
     }
 
     private async Task fillField(IField preparedField, List<IFigure> ships)
@@ -203,6 +197,12 @@ public class PlayerConsole : IPlayer<KaNoBuInitModel, KaNoBuInitResponseModel, K
     public void gameFinished(List<int> winners)
     {
         this.showMessage($"Player {this.players[winners[0]]} win.");
+    }
+
+    public void playerDisconnected(int playerNumber)
+    {
+
+        this.showMessage($"Player {playerNumber} disconnected.");
     }
 
     public void playerInitialized(int playerNumber, string playerName)

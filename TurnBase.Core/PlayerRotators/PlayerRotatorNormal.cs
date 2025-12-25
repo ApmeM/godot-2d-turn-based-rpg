@@ -1,18 +1,32 @@
+
 namespace TurnBase.Core;
 
 public class PlayerRotatorNormal : IPlayerRotator
 {
-    public int Size { get; set; }
-    private int currentPlayer = 0;
-
-    public void MoveNext()
+    public IPlayerRotator.PlayerRotationResult MoveNext(List<IPlayer>? current, List<IPlayer> allPlayers)
     {
-        this.currentPlayer++;
-        this.currentPlayer = this.currentPlayer % Size;
-    }
+        if (current == null || current.Count == 0)
+        {
+            return new IPlayerRotator.PlayerRotationResult
+            {
+                IsNewTurn = true,
+                PlayersInTurn = new List<IPlayer> { allPlayers[0] }
+            };
+        }
 
-    public int GetCurrent()
-    {
-        return this.currentPlayer;
+        if (current.Count != 1)
+        {
+            throw new Exception($"Current players list must contain exactly 0 or 1 player for {nameof(PlayerRotatorNormal)}.");
+        }
+
+        var currentIndex = allPlayers.IndexOf(current[0]);
+        var nextIndex = (currentIndex + 1) % allPlayers.Count;
+        var isNewTurn = nextIndex == 0;
+
+        return new IPlayerRotator.PlayerRotationResult
+        {
+            IsNewTurn = isNewTurn,
+            PlayersInTurn = new List<IPlayer> { allPlayers[nextIndex] }
+        };
     }
 }

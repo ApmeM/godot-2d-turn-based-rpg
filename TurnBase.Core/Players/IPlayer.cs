@@ -1,6 +1,11 @@
 namespace TurnBase.Core;
 
-public interface IPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel>
+public interface IPlayer
+{
+    
+}
+
+public interface IPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel> : IPlayer
 {
     Task<InitResponseModel<TInitResponseModel>> Init(InitModel<TInitModel> model);
 

@@ -10,14 +10,15 @@ public class Program
         var player = new PlayerConsole();
         var game = new Game<KaNoBuInitModel, KaNoBuInitResponseModel, KaNoBuMoveModel, KaNoBuMoveResponseModel, KaNoBuMoveNotificationModel>(rules);
         game.AddPlayer(player);
-        game.AddPlayer(new KaNoBuPlayerEasy());
+        game.AddPlayer(new KaNoBuPlayerLoose());
 
         game.GameStarted += player.gameStarted;
         game.GamePlayerInitialized += player.playerInitialized;
+        game.GamePlayerDisconnected += player.playerDisconnected;
         game.GamePlayerWrongTurn += player.playerWrongTurnMade;
         game.GamePlayerTurn += player.playerTurnMade;
         game.GameFinished += player.gameFinished;
         
-        await game.Play(true);
+        await game.Play();
     }
 }

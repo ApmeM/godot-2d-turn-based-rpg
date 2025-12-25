@@ -31,12 +31,14 @@ public class KaNoBuRules : IGameRules<KaNoBuInitModel, KaNoBuInitResponseModel, 
         return 2;
     }
 
-    public IPlayerRotator getRotator()
+    public IPlayerRotator GetInitRotator()
     {
-        return new PlayerRotatorNormal
-        {
-            Size = this.getMaxPlayersCount()
-        };
+        return new PlayerRotatorAllAtOnce();
+    }
+
+    public IPlayerRotator GetMoveRotator()
+    {
+        return new PlayerRotatorNormal();
     }
 
     public KaNoBuInitModel GetInitModel(int playerNumber)
@@ -303,5 +305,10 @@ public class KaNoBuRules : IGameRules<KaNoBuInitModel, KaNoBuInitResponseModel, 
         {
             return attacker;
         }
+    }
+
+    public void TurnCompleted(IField mainField)
+    {
+        // Nothing to do here.
     }
 }
