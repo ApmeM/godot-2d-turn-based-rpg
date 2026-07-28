@@ -217,7 +217,10 @@ namespace TurnBase
         public void Disconnect(IGameEventListener<TMoveNotificationModel> listener)
         {
             //TODO: Handle disconnect player in memorization and game field.
-            if (listener is IPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel, TMoveNotificationModel> player && this.players.ContainsKey(player))
+            if (
+                listener is IPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel, TMoveNotificationModel> player && 
+                this.players.ContainsKey(player)
+                )
             {
                 var playerData = this.players[player];
                 playerData.IsInGame = false;

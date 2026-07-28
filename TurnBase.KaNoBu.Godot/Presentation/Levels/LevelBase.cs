@@ -41,7 +41,7 @@ public partial class LevelBase
         var allUnits = this.field.GetChildren();
         foreach (Unit unit in allUnits)
         {
-            var fig = new KaNoBuFigure(unit.PlayerNumber, unit.UnitType, true, 0);
+            var fig = KaNoBuFigure.Create(unit.PlayerNumber, unit.UnitType, true, 0);
             var pos = this.WorldToMap(unit.Position);
             var x = (int)pos.x;
             var y = (int)pos.y;

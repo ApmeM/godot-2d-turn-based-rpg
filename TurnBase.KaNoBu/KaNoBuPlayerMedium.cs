@@ -32,7 +32,7 @@ namespace TurnBase.KaNoBu
                 for (var j = 0; j < model.Request.Height; j++)
                 {
                     var ship = model.Request.AvailableFigures[r.Next(model.Request.AvailableFigures.Count)];
-                    preparedField[i, j] = new KaNoBuFigure(this.myNumber, ship, true, 0);
+                    preparedField[i, j] = KaNoBuFigure.Create(this.myNumber, ship, true, 0);
                     model.Request.AvailableFigures.Remove(ship);
                 }
             }

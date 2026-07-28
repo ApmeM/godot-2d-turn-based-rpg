@@ -1,6 +1,4 @@
-using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Godot;
 using TurnBase;
 using TurnBase.KaNoBu;
@@ -86,8 +84,7 @@ public partial class Main
     {
         var gameField = this.GetTree().GetNodesInGroup(Groups.Field)
             .Cast<GameField>()
-            .FirstOrDefault(a => a.Game.GameId == gameId);
-
+            .SingleOrDefault(a => a.Game.GameId == gameId);
         if (gameField == null)
         {
             return;

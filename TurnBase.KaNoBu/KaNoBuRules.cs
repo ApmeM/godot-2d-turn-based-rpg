@@ -166,7 +166,7 @@ namespace TurnBase.KaNoBu
                     }
 
                     mainField[position] = null;
-                    mainField[position] = new KaNoBuFigure(playerNumber, playerShip, this.AllFiguresVisible, 0);
+                    mainField[position] = KaNoBuFigure.Create(playerNumber, playerShip, this.AllFiguresVisible, 0);
                 }
             }
 
@@ -364,40 +364,7 @@ namespace TurnBase.KaNoBu
 
         private KaNoBuFigure battle(KaNoBuFigure attacker, KaNoBuFigure defender)
         {
-            if (defender.FigureType == attacker.FigureType)
-            {
-                return null;
-            }
-            else if (defender.FigureType == KaNoBuFigure.FigureTypes.ShipFlag)
-            {
-                return attacker;
-            }
-            else if (defender.FigureType == KaNoBuFigure.FigureTypes.ShipMine)
-            {
-                return defender;
-            }
-            else if (defender.FigureType == KaNoBuFigure.FigureTypes.ShipUniversal)
-            {
-                defender.FigureType = Winner[attacker.FigureType];
-                return defender;
-            }
-            else if (attacker.FigureType == KaNoBuFigure.FigureTypes.ShipUniversal)
-            {
-                attacker.FigureType = Winner[defender.FigureType];
-                return attacker;
-            }
-            else if (attacker.FigureType == Winner[defender.FigureType])
-            {
-                return attacker;
-            }
-            else if (defender.FigureType == Winner[attacker.FigureType])
-            {
-                return defender;
-            }
-            else
-            {
-                throw new InvalidOperationException($"Battle between attacker {attacker.FigureType} and defender {defender.FigureType} should not happen.");
-            }
+            return attacker.ResolveBattle(defender);
         }
 
         public void TurnCompleted(IField mainField)

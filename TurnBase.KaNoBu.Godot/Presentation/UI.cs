@@ -157,11 +157,7 @@ public partial class UI
                 return new PlayerLoose<KaNoBuInitModel, KaNoBuInitResponseModel, KaNoBuMoveModel, KaNoBuMoveResponseModel, KaNoBuMoveNotificationModel>();
             case 1:
                 // Human
-                return new TimeoutPlayer<KaNoBuInitModel, KaNoBuInitResponseModel, KaNoBuMoveModel, KaNoBuMoveResponseModel, KaNoBuMoveNotificationModel>(
-                    field,
-                    async (delay) => await this.ToSignal(this.GetTree().CreateTimer(delay / 1000f), "timeout"),
-                    1000,
-                    60000);
+                return field;
             case 2:
                 // Computer Easy
                 var playerEasy = new KaNoBuPlayerEasy();
