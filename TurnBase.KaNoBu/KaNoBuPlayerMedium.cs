@@ -128,6 +128,11 @@ namespace TurnBase.KaNoBu
                     }
                 }
             }
+            if (closestEnemy == null)
+            {
+                return 0;
+            }
+
             {
                 var dst = Math.Abs(closestEnemy.Value.X - a.From.X) + Math.Abs(closestEnemy.Value.Y - a.From.Y);
                 var newDst = Math.Abs(closestEnemy.Value.X - a.To.X) + Math.Abs(closestEnemy.Value.Y - a.To.Y);
@@ -163,6 +168,11 @@ namespace TurnBase.KaNoBu
                     {
                         var to = new Point { X = x + dir.X, Y = y + dir.Y };
                         if (!field.IsInBounds(to))
+                        {
+                            continue;
+                        }
+
+                        if (field.walls[to.X, to.Y])
                         {
                             continue;
                         }

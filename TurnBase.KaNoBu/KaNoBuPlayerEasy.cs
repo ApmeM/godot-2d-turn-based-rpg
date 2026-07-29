@@ -129,6 +129,11 @@ namespace TurnBase.KaNoBu
                 return;
             }
 
+            if (field.walls[to.X, to.Y])
+            {
+                return;
+            }
+
             var shipTo = field[to] as KaNoBuFigure;
             if (shipTo == null || shipTo.PlayerId != this.myNumber)
             {

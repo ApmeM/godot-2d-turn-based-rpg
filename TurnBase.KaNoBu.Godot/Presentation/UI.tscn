@@ -110,7 +110,7 @@ margin_bottom = 76.0
 [node name="ServerSettingsContainer" type="GridContainer" parent="GameType/Custom"]
 margin_top = 86.0
 margin_right = 632.0
-margin_bottom = 130.0
+margin_bottom = 154.0
 columns = 2
 
 [node name="MapSizeLabel" type="Label" parent="GameType/Custom/ServerSettingsContainer"]
@@ -144,10 +144,22 @@ margin_top = 20.0
 margin_right = 255.0
 margin_bottom = 44.0
 
+[node name="WithDocksLabel" type="Label" parent="GameType/Custom/ServerSettingsContainer"]
+margin_top = 49.0
+margin_right = 101.0
+margin_bottom = 63.0
+text = "With docks"
+
+[node name="WithDocksSelector" type="CheckBox" parent="GameType/Custom/ServerSettingsContainer"]
+margin_left = 105.0
+margin_top = 44.0
+margin_right = 255.0
+margin_bottom = 68.0
+
 [node name="StartServerButton" type="Button" parent="GameType/Custom"]
-margin_top = 140.0
+margin_top = 164.0
 margin_right = 632.0
-margin_bottom = 160.0
+margin_bottom = 184.0
 text = "Start"
 
 [node name="Connect" type="VBoxContainer" parent="GameType"]

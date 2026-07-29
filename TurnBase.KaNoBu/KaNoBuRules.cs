@@ -22,6 +22,7 @@ namespace TurnBase.KaNoBu
         private readonly int size;
 
         public bool AllFiguresVisible;
+        public bool WithDocks;
 
         public KaNoBuRules(int size)
         {
@@ -35,7 +36,22 @@ namespace TurnBase.KaNoBu
 
         public IField generateGameField()
         {
-            return Field2D.Create(this.size, this.size);
+            var field = Field2D.Create(this.size, this.size);
+            if (this.WithDocks)
+            {
+                var blockSize = size / 3;
+                for (var i = 0; i < blockSize; i++)
+                {
+                    for (var j = 0; j < blockSize; j++)
+                    {
+                        field.walls[i, j] = true;
+                        field.walls[i, size - 1 - j] = true;
+                        field.walls[size - 1 - i, j] = true;
+                        field.walls[size - 1 - i, size - 1 - j] = true;
+                    }
+                }
+            }
+            return field;
         }
 
         public int getMaxPlayersCount()
@@ -190,7 +206,7 @@ namespace TurnBase.KaNoBu
             {
                 for (var j = 0; j < mainHeight; j++)
                 {
-                    var playerShip = (KaNoBuFigure)mainField[i,j];
+                    var playerShip = (KaNoBuFigure)mainField[i, j];
                     if (playerShip == null)
                     {
                         continue;
@@ -293,7 +309,7 @@ namespace TurnBase.KaNoBu
 
             if (winner != null)
             {
-                mainField[playerMove.From]= null;
+                mainField[playerMove.From] = null;
                 mainField[playerMove.To] = null;
                 mainField[playerMove.To] = winner.FigureType == KaNoBuFigure.FigureTypes.ShipMine ? null : winner;
                 winner.WinNumber++;
@@ -310,7 +326,7 @@ namespace TurnBase.KaNoBu
                 {
                     for (int j = 0; j < mainField.Height; j++)
                     {
-                        var playerShip = (KaNoBuFigure)mainField[i,j];
+                        var playerShip = (KaNoBuFigure)mainField[i, j];
                         if (playerShip == null)
                         {
                             continue;
