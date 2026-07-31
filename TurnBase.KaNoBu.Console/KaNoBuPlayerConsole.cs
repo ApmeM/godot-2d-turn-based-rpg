@@ -103,7 +103,7 @@ public class KaNoBuPlayerConsole :
                     {
                         continue;
                     }
-                    preparedField[point] = new KaNoBuFigure(playerId, ship, true, 0);
+                    preparedField[point] = KaNoBuFigure.Create(playerId, ship, true, 0);
                     break;
                 }
                 ships.RemoveAt(0);
@@ -115,7 +115,7 @@ public class KaNoBuPlayerConsole :
                     this.showMessage("Cant place on this field. It is already occupied.");
                     continue;
                 }
-                preparedField[p.Value] = new KaNoBuFigure(playerId, ship, true, 0);
+                preparedField[p.Value] = KaNoBuFigure.Create(playerId, ship, true, 0);
                 ships.RemoveAt(0);
             }
         }
