@@ -12,7 +12,8 @@ public partial class GameField :
 {
     [Export]
     public PackedScene UnitScene;
-    private int playerId = -1;
+    public int playerId { get; private set; } = -1;
+    public List<int> Winners{ get; private set; }
     private KaNoBuFieldMemorization memorizedField = new KaNoBuFieldMemorization();
     public IGame<KaNoBuInitModel, KaNoBuInitResponseModel, KaNoBuMoveModel, KaNoBuMoveResponseModel, KaNoBuMoveNotificationModel> Game;
 
@@ -182,18 +183,13 @@ public partial class GameField :
 
     public async void GameFinished(List<int> winners)
     {
-        if (winners.Count == 1)
+        if (winners.Count > 1)
         {
-            this.timerLabel.ShowMessage($"Player {winners[0]} won.", 5);
+            throw new Exception($"Unexpected number of winners : {winners.Count}.");
         }
-        else if (winners.Count == 0)
-        {
-            this.timerLabel.ShowMessage($"Draw.", 5);
-        }
-        else
-        {
-            throw new Exception("Unexpected number of winners.");
-        }
+
+        this.Winners = winners;
+
         _ = MoveCameraToCenter();
     }
 

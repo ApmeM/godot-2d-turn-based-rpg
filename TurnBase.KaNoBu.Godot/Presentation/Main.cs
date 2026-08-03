@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using TurnBase;
@@ -89,6 +90,19 @@ public partial class Main
         {
             return;
         }
+
+        var fieldPlayerId = gameField.playerId;
+        var winners = gameField.Winners?.ToHashSet();
+        if (winners?.Contains(fieldPlayerId) ?? false)
+        {
+            this.winnerLabel.Text = "You win.";
+        }
+        else
+        {
+            this.winnerLabel.Text = "You loose.";
+        }
+        
+        this.gameOverPopup.Show();
 
         gameField.Game.Disconnect(gameField);
         gameField.QueueFree();
