@@ -76,6 +76,11 @@ namespace TurnBase.KaNoBu
                 {
                     return 8; // Attack unknown enemy
                 }
+                if (shipTo.FigureType == KaNoBuFigure.FigureTypes.ShipFlag)
+                {
+                    return 100; // Attack flag enemy
+                }
+
                 if (shipFrom.FigureType == KaNoBuFigure.FigureTypes.ShipUniversal || shipTo.FigureType == KaNoBuRules.Looser[shipFrom.FigureType])
                 {
                     return 10; // Attack loosing enemy
@@ -100,7 +105,7 @@ namespace TurnBase.KaNoBu
 
             if (enemyNearby)
             {
-                return 5; // Prioritize moving from enemy
+                return 5; // Prioritize moving to enemy
             }
 
             Point? closestEnemy = null;
