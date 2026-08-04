@@ -38,6 +38,7 @@ margin_bottom = 79.0
 text = "Exit"
 
 [node name="GameOverPopup" parent="MainMenu" instance=ExtResource( 5 )]
+layer = 11
 visible = false
 Title = "Game over"
 

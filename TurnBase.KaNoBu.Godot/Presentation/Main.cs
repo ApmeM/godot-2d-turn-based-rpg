@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Godot;
 using TurnBase;
 using TurnBase.KaNoBu;
@@ -77,11 +78,11 @@ public partial class Main
 
     private void EndCurrentGame()
     {
-        this.EndGame(this.gameId);
         this.mainMenuPopup.Hide();
+        this.EndGame(this.gameId);
     }
 
-    private void EndGame(string gameId)
+    private async void EndGame(string gameId)
     {
         var gameField = this.GetTree().GetNodesInGroup(Groups.Field)
             .Cast<GameField>()
@@ -103,6 +104,7 @@ public partial class Main
         }
         
         this.gameOverPopup.Show();
+        await this.ToSignal(this.gameOverPopup, nameof(CustomPopup.PopupClosed));
 
         gameField.Game.Disconnect(gameField);
         gameField.QueueFree();
