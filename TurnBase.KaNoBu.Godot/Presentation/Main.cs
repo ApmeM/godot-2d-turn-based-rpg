@@ -94,6 +94,10 @@ public partial class Main
 
         var fieldPlayerId = gameField.playerId;
         var winners = gameField.Winners?.ToHashSet();
+        if (fieldPlayerId == -1)
+        {
+            this.winnerLabel.Text = $"The game is over.";
+        }
         if (winners?.Contains(fieldPlayerId) ?? false)
         {
             this.winnerLabel.Text = "You win.";
@@ -102,7 +106,7 @@ public partial class Main
         {
             this.winnerLabel.Text = "You loose.";
         }
-        
+
         this.gameOverPopup.Show();
         await this.ToSignal(this.gameOverPopup, nameof(CustomPopup.PopupClosed));
 
