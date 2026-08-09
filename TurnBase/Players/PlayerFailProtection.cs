@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TurnBase
@@ -17,11 +18,15 @@ namespace TurnBase
             this.player = player;
         }
 
-        public async Task<InitResponseModel<TInitResponseModel>> Init(InitModel<TInitModel> model)
+        public async Task<InitResponseModel<TInitResponseModel>> Init(InitModel<TInitModel> model, CancellationToken token = default)
         {
             try
             {
-                return await this.player.Init(model);
+                return await this.player.Init(model, token);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch (Exception e)
             {
@@ -30,11 +35,15 @@ namespace TurnBase
             }
         }
 
-        public async Task<MakeTurnResponseModel<TMoveResponseModel>> MakeTurn(MakeTurnModel<TMoveModel> model)
+        public async Task<MakeTurnResponseModel<TMoveResponseModel>> MakeTurn(MakeTurnModel<TMoveModel> model, CancellationToken token = default)
         {
             try
             {
-                return await this.player.MakeTurn(model);
+                return await this.player.MakeTurn(model, token);
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
             }
             catch(Exception e)
             {

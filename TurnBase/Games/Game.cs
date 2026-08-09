@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TurnBase
@@ -57,7 +58,7 @@ namespace TurnBase
             this.gameLogListeners.Add(new FailProtectedListener<TMoveNotificationModel>(gameLogListener));
         }
 
-        public async Task Play()
+        public async Task Play(CancellationToken token = default)
         {
             for (var i = this.players.Count; i < this.rules.getMinPlayersCount(); i++)
             {
@@ -70,14 +71,14 @@ namespace TurnBase
             this.players.Keys.ToList().ForEach(a => a.GameStarted());
             this.gameLogListeners.GameStarted();
 
-            await this.InitPlayers();
+            await this.InitPlayers(token);
 
             this.players.Keys.ToList().ForEach(a => a.PlayersInitialized());
             this.gameLogListeners.PlayersInitialized();
             this.players.Keys.ToList().ForEach(a => a.GameLogCurrentField(this.mainField.copyForPlayer(players[a].PlayerNumber)));
             this.gameLogListeners.GameLogCurrentField(this.mainField.copyForPlayer(-1));
 
-            await this.MovePlayers();
+            await this.MovePlayers(token);
 
             this.players.Keys.ToList().ForEach(a => a.GameLogCurrentField(this.mainField.copyForPlayer(players[a].PlayerNumber)));
             this.gameLogListeners.GameLogCurrentField(this.mainField.copyForPlayer(-1));
@@ -105,16 +106,18 @@ namespace TurnBase
                     .ToArray());
         }
 
-        private async Task InitPlayers()
+        private async Task InitPlayers(CancellationToken token)
         {
             var rotator = this.rules.GetInitRotator();
             var allPlayers = this.players.Keys.Cast<IPlayer>().ToList();
 
             var nextPlayers = rotator.MoveNext(null, allPlayers);
-            Task<bool> action(IPlayer player) => this.InitPlayer((IPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel, TMoveNotificationModel>)player);
+            Task<bool> action(IPlayer player) => this.InitPlayer((IPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel, TMoveNotificationModel>)player, token);
 
             while (true)
             {
+                token.ThrowIfCancellationRequested();
+                
                 await GroupAction(nextPlayers.PlayersInTurn, action);
                 nextPlayers = rotator.MoveNext(nextPlayers.PlayersInTurn, allPlayers);
                 if (nextPlayers.IsNewTurn)
@@ -124,13 +127,13 @@ namespace TurnBase
             }
         }
 
-        private async Task<bool> InitPlayer(IPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel, TMoveNotificationModel> player)
+        private async Task<bool> InitPlayer(IPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel, TMoveNotificationModel> player, CancellationToken token)
         {
             var playerNumber = this.players[player].PlayerNumber;
 
             var initModel = this.rules.GetInitModel(playerNumber);
 
-            var initResponseModel = await player.Init(new InitModel<TInitModel> { PlayerId = playerNumber, Request = initModel });
+            var initResponseModel = await player.Init(new InitModel<TInitModel> { PlayerId = playerNumber, Request = initModel }, token);
 
             if (initResponseModel == null || initResponseModel.Response == null)
             {
@@ -150,16 +153,18 @@ namespace TurnBase
             return true;
         }
 
-        private async Task MovePlayers()
+        private async Task MovePlayers(CancellationToken token)
         {
             var rotator = this.rules.GetMoveRotator();
             var allPlayers = this.players.Keys.Cast<IPlayer>().ToList();
 
             var nextPlayers = rotator.MoveNext(null, allPlayers);
-            Task<bool> action(IPlayer player) => this.MovePlayer((IPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel, TMoveNotificationModel>)player);
+            Task<bool> action(IPlayer player) => this.MovePlayer((IPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel, TMoveNotificationModel>)player, token);
 
             while (this.rules.findWinners(this.mainField) == null)
             {
+                token.ThrowIfCancellationRequested();
+
                 await GroupAction(nextPlayers.PlayersInTurn, action);
                 nextPlayers = rotator.MoveNext(nextPlayers.PlayersInTurn, allPlayers);
 
@@ -176,7 +181,7 @@ namespace TurnBase
             }
         }
 
-        private async Task<bool> MovePlayer(IPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel, TMoveNotificationModel> player)
+        private async Task<bool> MovePlayer(IPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel, TMoveNotificationModel> player, CancellationToken token)
         {
             var playerNumber = this.players[player].PlayerNumber;
 
@@ -186,7 +191,8 @@ namespace TurnBase
             var move = this.rules.AutoMove(this.mainField, playerNumber);
             while (move == null)
             {
-                var makeTurnResponseModel = await player.MakeTurn(new MakeTurnModel<TMoveModel> { TryNumber = tryNumber, Request = field });
+                token.ThrowIfCancellationRequested();
+                var makeTurnResponseModel = await player.MakeTurn(new MakeTurnModel<TMoveModel> { TryNumber = tryNumber, Request = field }, token);
                 tryNumber++;
 
                 if (makeTurnResponseModel == null || makeTurnResponseModel.Response == null)

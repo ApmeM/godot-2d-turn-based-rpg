@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Godot;
 using TurnBase;
@@ -21,14 +22,14 @@ public partial class GameField :
 
     #region IPlayer region
 
-    public Task<InitResponseModel<KaNoBuInitResponseModel>> Init(InitModel<KaNoBuInitModel> model)
+    public Task<InitResponseModel<KaNoBuInitResponseModel>> Init(InitModel<KaNoBuInitModel> model, CancellationToken token = default)
     {
         this.playerId = model.PlayerId;
         _ = MoveCameraToPlayer();
-        return new KaNoBuPlayerEasy().Init(model);
+        return new KaNoBuPlayerEasy().Init(model, token);
     }
 
-    public async Task<MakeTurnResponseModel<KaNoBuMoveResponseModel>> MakeTurn(MakeTurnModel<KaNoBuMoveModel> model)
+    public async Task<MakeTurnResponseModel<KaNoBuMoveResponseModel>> MakeTurn(MakeTurnModel<KaNoBuMoveModel> model, CancellationToken token = default)
     {
         this.timerLabel.ShowMessage("Your turn", 1f);
 
@@ -36,9 +37,7 @@ public partial class GameField :
 
         this.UpdateKnownShips();
 
-        var moveRes = await this.ToSignal(this, nameof(MoveDone));
-        var from = (Vector2)moveRes[0];
-        var to = (Vector2)moveRes[1];
+        var (from, to) = await this.ToMySignal<Vector2, Vector2>(nameof(MoveDone)).WrapCancellation(token);
 
         return new MakeTurnResponseModel<KaNoBuMoveResponseModel>
         {
@@ -306,8 +305,8 @@ public partial class GameField :
         return this.field.WorldToMap(position);
     }
 
-    public async Task Play()
+    public async Task Play(CancellationToken token = default)
     {
-        await Game.Play();
+        await Game.Play(token).WrapCancellation(token);
     }
 }

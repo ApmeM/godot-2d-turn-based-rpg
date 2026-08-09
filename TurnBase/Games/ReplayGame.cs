@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TurnBase
@@ -27,10 +28,12 @@ namespace TurnBase
             return AddPlayerStatus.MAX_PLAYERS_REACHED;
         }
 
-        public async Task Play()
+        public async Task Play(CancellationToken token = default)
         {
             for (var i = 0; i < events.Count; i++)
             {
+                token.ThrowIfCancellationRequested();
+
                 var gameEvent = events[i];
                 if (gameEvent is GameStartedCommunicationModel gameStarted)
                 {

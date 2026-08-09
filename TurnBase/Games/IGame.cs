@@ -1,10 +1,11 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TurnBase
 {
     public interface IGame
     {
-        Task Play();
+        Task Play(CancellationToken token = default);
     }
 
     public interface IGame<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel, TMoveNotificationModel> : IGame

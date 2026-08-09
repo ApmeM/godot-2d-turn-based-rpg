@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TurnBase
@@ -12,8 +13,8 @@ namespace TurnBase
         IGameEventListener<TMoveNotificationModel>
     {
         #region Requests for actions
-        Task<InitResponseModel<TInitResponseModel>> Init(InitModel<TInitModel> model);
-        Task<MakeTurnResponseModel<TMoveResponseModel>> MakeTurn(MakeTurnModel<TMoveModel> model);
+        Task<InitResponseModel<TInitResponseModel>> Init(InitModel<TInitModel> model, CancellationToken token = default);
+        Task<MakeTurnResponseModel<TMoveResponseModel>> MakeTurn(MakeTurnModel<TMoveModel> model, CancellationToken token = default);
         #endregion
     }
 }

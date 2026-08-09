@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TurnBase.KaNoBu
@@ -22,7 +23,7 @@ namespace TurnBase.KaNoBu
 
         private KaNoBuFieldMemorization memorizedField = new KaNoBuFieldMemorization();
 
-        public async Task<InitResponseModel<KaNoBuInitResponseModel>> Init(InitModel<KaNoBuInitModel> model)
+        public async Task<InitResponseModel<KaNoBuInitResponseModel>> Init(InitModel<KaNoBuInitModel> model, CancellationToken token = default)
         {
             this.myNumber = model.PlayerId;
 
@@ -44,7 +45,7 @@ namespace TurnBase.KaNoBu
             };
         }
 
-        public async Task<MakeTurnResponseModel<KaNoBuMoveResponseModel>> MakeTurn(MakeTurnModel<KaNoBuMoveModel> model)
+        public async Task<MakeTurnResponseModel<KaNoBuMoveResponseModel>> MakeTurn(MakeTurnModel<KaNoBuMoveModel> model, CancellationToken token = default)
         {
             this.memorizedField.SynchronizeField((Field2D)model.Request.Field);
             var from = this.findAllMovement(this.memorizedField.Field)

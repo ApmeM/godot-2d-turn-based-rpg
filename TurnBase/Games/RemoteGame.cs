@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TurnBase
@@ -13,7 +14,7 @@ namespace TurnBase
 
     public interface IClient
     {
-        Task<ClientResponse> SendAction(string serverUrl, string action, Dictionary<string, object> queryData, ICommunicationModel body = null);
+        Task<ClientResponse> SendAction(string serverUrl, string action, Dictionary<string, object> queryData, ICommunicationModel body, CancellationToken token);
     }
 
     public class RemoteGame<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel, TMoveNotificationModel> :
@@ -50,10 +51,10 @@ namespace TurnBase
             this.gameLogListeners.Add(gameLogListener);
         }
 
-        public async Task Play()
+        public async Task Play(CancellationToken token = default)
         {
             var gameIdQueryString = new Dictionary<string, object> { { "gameId", this.GameId } };
-            var playerId = ((await this.client.SendAction(serverUrl, "join", gameIdQueryString)).body as JoinGameResponseModel).PlayerId;
+            var playerId = ((await this.client.SendAction(serverUrl, "join", gameIdQueryString, null, token)).body as JoinGameResponseModel).PlayerId;
 
             var playerIdQueryString = new Dictionary<string, object> { { "playerId", playerId } };
 
@@ -61,7 +62,8 @@ namespace TurnBase
 
             while (this.connected)
             {
-                var result = await this.client.SendAction(serverUrl, "wait-action", playerIdQueryString);
+                token.ThrowIfCancellationRequested();
+                var result = await this.client.SendAction(serverUrl, "wait-action", playerIdQueryString, null, token);
 
                 if (result.code == 0)
                 {
@@ -72,13 +74,13 @@ namespace TurnBase
                 {
                     if (result.body is InitModel<TInitModel> init)
                     {
-                        var response = await player.Init(init);
-                        await this.client.SendAction(serverUrl, "answer", playerIdQueryString, response);
+                        var response = await player.Init(init, token);
+                        await this.client.SendAction(serverUrl, "answer", playerIdQueryString, response, token);
                     }
                     else if (result.body is MakeTurnModel<TMoveModel> turn)
                     {
-                        var response = await player.MakeTurn(turn);
-                        await this.client.SendAction(serverUrl, "answer", playerIdQueryString, response);
+                        var response = await player.MakeTurn(turn, token);
+                        await this.client.SendAction(serverUrl, "answer", playerIdQueryString, response, token);
                     }
                     else if (result.body is GameStartedCommunicationModel gameStarted)
                     {

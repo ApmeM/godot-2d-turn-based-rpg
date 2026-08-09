@@ -1,3 +1,5 @@
+using System.Threading;
+
 namespace TurnBase.KaNoBu;
 
 public class KaNoBuPlayerConsole :
@@ -7,8 +9,9 @@ public class KaNoBuPlayerConsole :
 
     #region IPlayer region
 
-    public async Task<MakeTurnResponseModel<KaNoBuMoveResponseModel>> MakeTurn(MakeTurnModel<KaNoBuMoveModel> makeTurnModel)
+    public async Task<MakeTurnResponseModel<KaNoBuMoveResponseModel>> MakeTurn(MakeTurnModel<KaNoBuMoveModel> makeTurnModel, CancellationToken token = default)
     {
+        token.ThrowIfCancellationRequested();
         var field = makeTurnModel.Request.Field;
         this.showMessage(field.ToString());
         this.showMessage("Select your move in format A0-A1.");
@@ -17,6 +20,7 @@ public class KaNoBuPlayerConsole :
 
         while (from == null || to == null)
         {
+            token.ThrowIfCancellationRequested();
             (from, to) = await readMove();
         }
 
@@ -26,8 +30,9 @@ public class KaNoBuPlayerConsole :
         };
     }
 
-    public async Task<InitResponseModel<KaNoBuInitResponseModel>> Init(InitModel<KaNoBuInitModel> model)
+    public async Task<InitResponseModel<KaNoBuInitResponseModel>> Init(InitModel<KaNoBuInitModel> model, CancellationToken token = default)
     {
+        token.ThrowIfCancellationRequested();
         this.showMessage($"Your turn number: {model.PlayerId}");
         var name = await this.getName();
 

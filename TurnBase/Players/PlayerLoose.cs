@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TurnBase
@@ -38,12 +39,12 @@ namespace TurnBase
         {
         }
 
-        public async Task<InitResponseModel<TInitResponseModel>> Init(InitModel<TInitModel> model)
+        public async Task<InitResponseModel<TInitResponseModel>> Init(InitModel<TInitModel> model, CancellationToken token = default)
         {
             return new InitResponseModel<TInitResponseModel>();
         }
 
-        public async Task<MakeTurnResponseModel<TMoveResponseModel>> MakeTurn(MakeTurnModel<TMoveModel> model)
+        public async Task<MakeTurnResponseModel<TMoveResponseModel>> MakeTurn(MakeTurnModel<TMoveModel> model, CancellationToken token = default)
         {
             return new MakeTurnResponseModel<TMoveResponseModel>();
         }

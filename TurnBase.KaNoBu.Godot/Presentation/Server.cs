@@ -1,6 +1,7 @@
 using Godot;
 using System.Text;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 [SceneReference("Server.tscn")]
@@ -36,12 +37,18 @@ public partial class Server : IServer
             return model;
         }
 
-        public Task<T> WaitResponse<T>(string playerId)
+        public Task<T> WaitResponse<T>(string playerId, CancellationToken token = default)
         {
-            this.PendingResponses[playerId] = new TaskCompletionSource<ICommunicationModel>();
-            return PendingResponses[playerId]
-                .Task
-                .ContinueWith(t => (T)t.Result);
+            var tcs = new TaskCompletionSource<ICommunicationModel>();
+            this.PendingResponses[playerId] = tcs;
+            if (token.CanBeCanceled)
+            {
+                token.Register(() => {
+                    tcs.TrySetCanceled(token);
+                    PendingResponses.Remove(playerId);
+                });
+            }
+            return tcs.Task.ContinueWith(t => (T)t.Result);
         }
 
         public void ResolveResponse(string playerId, ICommunicationModel response)
@@ -240,9 +247,9 @@ public partial class Server : IServer
         this.Actions.PushModel(playerId, model);
     }
 
-    public Task<T> SendRequest<T>(string playerId, ICommunicationModel model)
+    public Task<T> SendRequest<T>(string playerId, ICommunicationModel model, CancellationToken token = default)
     {
         this.Actions.PushModel(playerId, model);
-        return this.Actions.WaitResponse<T>(playerId);
+        return this.Actions.WaitResponse<T>(playerId, token);
     }
 }

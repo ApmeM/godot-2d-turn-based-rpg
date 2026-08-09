@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TurnBase.KaNoBu
@@ -25,11 +26,12 @@ namespace TurnBase.KaNoBu
             this.turnDelay = turnDelay;
         }
 
-        public async Task<InitResponseModel<TInitResponseModel>> Init(InitModel<TInitModel> model)
+        public async Task<InitResponseModel<TInitResponseModel>> Init(InitModel<TInitModel> model, CancellationToken token = default)
         {
+            token.ThrowIfCancellationRequested();
             var task1 = delayAction(this.initDelay);
-            var task2 = this.player.Init(model);
-            var task = await Task.WhenAny(task1, task2);
+            var task2 = this.player.Init(model, token);
+            var task = await Task.WhenAny(task1, task2).WrapCancellation(token);
             if (task == task2)
             {
                 return await task2;
@@ -38,11 +40,12 @@ namespace TurnBase.KaNoBu
             return new InitResponseModel<TInitResponseModel>();
         }
 
-        public async Task<MakeTurnResponseModel<TMoveResponseModel>> MakeTurn(MakeTurnModel<TMoveModel> model)
+        public async Task<MakeTurnResponseModel<TMoveResponseModel>> MakeTurn(MakeTurnModel<TMoveModel> model, CancellationToken token = default)
         {
+            token.ThrowIfCancellationRequested();
             var task1 = delayAction(this.turnDelay);
-            var task2 = this.player.MakeTurn(model);
-            var task = await Task.WhenAny(task1, task2);
+            var task2 = this.player.MakeTurn(model, token);
+            var task = await Task.WhenAny(task1, task2).WrapCancellation(token);
             if (task == task2)
             {
                 return await task2;

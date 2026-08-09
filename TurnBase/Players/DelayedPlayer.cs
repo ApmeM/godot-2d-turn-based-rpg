@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TurnBase.KaNoBu
@@ -25,16 +26,20 @@ namespace TurnBase.KaNoBu
             this.turnDelay = turnDelay;
         }
 
-        public async Task<InitResponseModel<TInitResponseModel>> Init(InitModel<TInitModel> model)
+        public async Task<InitResponseModel<TInitResponseModel>> Init(InitModel<TInitModel> model, CancellationToken token = default)
         {
-            await delayAction(this.initDelay);
-            return await this.player.Init(model);
+            token.ThrowIfCancellationRequested();
+            await delayAction(this.initDelay).WrapCancellation(token);
+            token.ThrowIfCancellationRequested();
+            return await this.player.Init(model, token);
         }
 
-        public async Task<MakeTurnResponseModel<TMoveResponseModel>> MakeTurn(MakeTurnModel<TMoveModel> model)
+        public async Task<MakeTurnResponseModel<TMoveResponseModel>> MakeTurn(MakeTurnModel<TMoveModel> model, CancellationToken token = default)
         {
-            await delayAction(this.turnDelay);
-            return await this.player.MakeTurn(model);
+            token.ThrowIfCancellationRequested();
+            await delayAction(this.turnDelay).WrapCancellation(token);
+            token.ThrowIfCancellationRequested();
+            return await this.player.MakeTurn(model, token);
         }
     }
 }

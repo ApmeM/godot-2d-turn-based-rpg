@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using TurnBase;
 
@@ -7,7 +8,7 @@ public interface IServer
 {
     void RegisterPlayer(string playerId, string gameId);
     void SendRequest(string playerId, ICommunicationModel model);
-    Task<T> SendRequest<T>(string playerId, ICommunicationModel model);
+    Task<T> SendRequest<T>(string playerId, ICommunicationModel model, CancellationToken token = default);
 }
 
 public class ServerPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveResponseModel, TMoveNotificationModel> :
@@ -24,14 +25,14 @@ public class ServerPlayer<TInitModel, TInitResponseModel, TMoveModel, TMoveRespo
         this.server.RegisterPlayer(this.PlayerId, gameId);
     }
 
-    public async Task<InitResponseModel<TInitResponseModel>> Init(InitModel<TInitModel> model)
+    public async Task<InitResponseModel<TInitResponseModel>> Init(InitModel<TInitModel> model, CancellationToken token = default)
     {
-        return await this.server.SendRequest<InitResponseModel<TInitResponseModel>>(PlayerId, model);
+        return await this.server.SendRequest<InitResponseModel<TInitResponseModel>>(PlayerId, model, token);
     }
 
-    public async Task<MakeTurnResponseModel<TMoveResponseModel>> MakeTurn(MakeTurnModel<TMoveModel> model)
+    public async Task<MakeTurnResponseModel<TMoveResponseModel>> MakeTurn(MakeTurnModel<TMoveModel> model, CancellationToken token = default)
     {
-        return await this.server.SendRequest<MakeTurnResponseModel<TMoveResponseModel>>(PlayerId, model);
+        return await this.server.SendRequest<MakeTurnResponseModel<TMoveResponseModel>>(PlayerId, model, token);
     }
 
     public void GameStarted()

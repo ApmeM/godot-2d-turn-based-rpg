@@ -112,9 +112,23 @@ public partial class Unit
         this.UnitType = this.unitType;
     }
 
+    public override void _ExitTree()
+    {
+        base._ExitTree();
+        this.CancelActions();
+        this.CurrentTask = null;
+    }
+
     public override void _Process(float delta)
     {
         base._Process(delta);
+
+        if (!IsInstanceValid(this) || !IsInsideTree())
+        {
+            this.CancelActions();
+            this.CurrentTask = null;
+            return;
+        }
 
         if (CurrentTask != null && CurrentTask.IsCompleted)
         {

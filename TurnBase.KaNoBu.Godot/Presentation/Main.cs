@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Godot;
 using TurnBase;
@@ -50,6 +52,8 @@ public partial class Main
     }
 
     private string gameId;
+    private CancellationTokenSource currentGameCancellationTokenSource;
+
     private async void OnStartGameAsync()
     {
         var game = this.uI.BuildGame();
@@ -71,7 +75,21 @@ public partial class Main
 
         this.gameId = game.Game.GameId;
 
-        await game.Play();
+        if (this.currentGameCancellationTokenSource != null)
+        {
+            this.currentGameCancellationTokenSource.Cancel();
+            this.currentGameCancellationTokenSource = null;
+        }
+
+        this.currentGameCancellationTokenSource = new CancellationTokenSource();
+
+        try
+        {
+            await game.Play(this.currentGameCancellationTokenSource.Token);
+        }
+        catch (OperationCanceledException)
+        {
+        }
 
         this.EndGame(this.gameId);
     }
@@ -79,6 +97,7 @@ public partial class Main
     private void EndCurrentGame()
     {
         this.mainMenuPopup.Hide();
+        this.currentGameCancellationTokenSource?.Cancel();
         this.EndGame(this.gameId);
     }
 
