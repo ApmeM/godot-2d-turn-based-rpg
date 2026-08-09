@@ -18,19 +18,23 @@ namespace TurnBase.KaNoBu
             ShipMine,
         }
 
-        protected KaNoBuFigure(int playerId, FigureTypes figureType, bool visibleForAllPlayers, int winNumber)
+        protected KaNoBuFigure(int playerId, bool visibleForAllPlayers, int winNumber)
         {
             PlayerId = playerId;
-            FigureType = figureType;
             this.visibleForAllPlayers = visibleForAllPlayers;
             WinNumber = winNumber;
         }
 
         public int PlayerId { get; set; }
-        public FigureTypes FigureType { get; set; }
+        public abstract FigureTypes FigureType { get; }
         public int WinNumber { get; set; }
 
-        protected bool VisibleForAllPlayers => this.visibleForAllPlayers;
+        public bool VisibleForAllPlayers => this.visibleForAllPlayers;
+
+        public KaNoBuFigure WithFigureType(FigureTypes figureType)
+        {
+            return Create(this.PlayerId, figureType, this.VisibleForAllPlayers, this.WinNumber);
+        }
 
         public static KaNoBuFigure Create(int playerId, FigureTypes figureType, bool visibleForAllPlayers, int winNumber)
         {

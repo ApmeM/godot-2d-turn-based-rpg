@@ -315,26 +315,27 @@ namespace TurnBase.KaNoBu
                 winner.WinNumber++;
                 if (winner.WinNumber % 3 == 0)
                 {
-                    winner.FigureType = KaNoBuFigure.FigureTypes.ShipUniversal;
+                    winner = winner.WithFigureType(KaNoBuFigure.FigureTypes.ShipUniversal);
+                    mainField[playerMove.To] = winner;
                 }
-            }
 
-            if (to.FigureType == KaNoBuFigure.FigureTypes.ShipFlag)
-            {
-                // Change all figures of this player to the player that captures the flag.
-                for (int i = 0; i < mainField.Width; i++)
+                if (to.FigureType == KaNoBuFigure.FigureTypes.ShipFlag)
                 {
-                    for (int j = 0; j < mainField.Height; j++)
+                    // Change all figures of this player to the player that captures the flag.
+                    for (int i = 0; i < mainField.Width; i++)
                     {
-                        var playerShip = (KaNoBuFigure)mainField[i, j];
-                        if (playerShip == null)
+                        for (int j = 0; j < mainField.Height; j++)
                         {
-                            continue;
-                        }
+                            var playerShip = (KaNoBuFigure)mainField[i, j];
+                            if (playerShip == null)
+                            {
+                                continue;
+                            }
 
-                        if (playerShip.PlayerId == to.PlayerId)
-                        {
-                            playerShip.PlayerId = from.PlayerId;
+                            if (playerShip.PlayerId == to.PlayerId)
+                            {
+                                playerShip.PlayerId = from.PlayerId;
+                            }
                         }
                     }
                 }
@@ -344,8 +345,8 @@ namespace TurnBase.KaNoBu
             {
                 battleResult =
                     winner == null ? KaNoBuMoveNotificationModel.BattleResult.Draw :
-                    winner == from ? KaNoBuMoveNotificationModel.BattleResult.AttackerWon :
-                    winner == to ? KaNoBuMoveNotificationModel.BattleResult.DefenderWon :
+                    winner.PlayerId == from.PlayerId ? KaNoBuMoveNotificationModel.BattleResult.AttackerWon :
+                    winner.PlayerId == to.PlayerId ? KaNoBuMoveNotificationModel.BattleResult.DefenderWon :
                     throw new Exception("Invalid battle calculation."),
                 isDefenderFlag = to.FigureType == KaNoBuFigure.FigureTypes.ShipFlag,
                 isMine = to.FigureType == KaNoBuFigure.FigureTypes.ShipMine

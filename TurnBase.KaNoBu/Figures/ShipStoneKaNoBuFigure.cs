@@ -3,9 +3,11 @@ namespace TurnBase.KaNoBu
     public sealed class ShipStoneKaNoBuFigure : KaNoBuFigure
     {
         public ShipStoneKaNoBuFigure(int playerId, bool visibleForAllPlayers, int winNumber)
-            : base(playerId, FigureTypes.ShipStone, visibleForAllPlayers, winNumber)
+            : base(playerId, visibleForAllPlayers, winNumber)
         {
         }
+
+        public override FigureTypes FigureType => FigureTypes.ShipStone;
 
         public override bool IsMoveValid(KaNoBuMoveResponseModel playerMove)
         {
@@ -26,8 +28,7 @@ namespace TurnBase.KaNoBu
 
             if (defender.FigureType == FigureTypes.ShipUniversal)
             {
-                defender.FigureType = FigureTypes.ShipPaper;
-                return defender;
+                return defender.WithFigureType(FigureTypes.ShipPaper);
             }
 
             if (defender.FigureType == FigureTypes.ShipPaper)

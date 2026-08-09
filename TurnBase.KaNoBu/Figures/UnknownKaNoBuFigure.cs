@@ -3,9 +3,11 @@ namespace TurnBase.KaNoBu
     public sealed class UnknownKaNoBuFigure : KaNoBuFigure
     {
         public UnknownKaNoBuFigure(int playerId, bool visibleForAllPlayers, int winNumber)
-            : base(playerId, FigureTypes.Unknown, visibleForAllPlayers, winNumber)
+            : base(playerId, visibleForAllPlayers, winNumber)
         {
         }
+
+        public override FigureTypes FigureType => FigureTypes.Unknown;
 
         public override bool IsMoveValid(KaNoBuMoveResponseModel playerMove)
         {

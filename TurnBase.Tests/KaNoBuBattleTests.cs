@@ -60,14 +60,5 @@ public class KaNoBuBattleTests
 
         Assert.That(winner, Is.Not.Null);
         Assert.That(winner.FigureType, Is.EqualTo(expectedWinnerType.Value));
-
-        if (winner == attacker)
-        {
-            Assert.That(attacker.FigureType, Is.EqualTo(expectedWinnerType.Value));
-        }
-        else
-        {
-            Assert.That(defender.FigureType, Is.EqualTo(expectedWinnerType.Value));
-        }
     }
 }

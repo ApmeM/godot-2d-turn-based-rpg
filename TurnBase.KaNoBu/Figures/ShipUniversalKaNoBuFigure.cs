@@ -3,9 +3,11 @@ namespace TurnBase.KaNoBu
     public sealed class ShipUniversalKaNoBuFigure : KaNoBuFigure
     {
         public ShipUniversalKaNoBuFigure(int playerId, bool visibleForAllPlayers, int winNumber)
-            : base(playerId, FigureTypes.ShipUniversal, visibleForAllPlayers, winNumber)
+            : base(playerId, visibleForAllPlayers, winNumber)
         {
         }
+
+        public override FigureTypes FigureType => FigureTypes.ShipUniversal;
 
         public override bool IsMoveValid(KaNoBuMoveResponseModel playerMove)
         {
@@ -29,8 +31,7 @@ namespace TurnBase.KaNoBu
                 return null;
             }
 
-            this.FigureType = GetTypeThatDefeats(defender.FigureType);
-            return this;
+            return this.WithFigureType(GetTypeThatDefeats(defender.FigureType));
         }
     }
 }

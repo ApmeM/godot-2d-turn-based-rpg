@@ -3,9 +3,11 @@ namespace TurnBase.KaNoBu
     public sealed class ShipFlagKaNoBuFigure : KaNoBuFigure
     {
         public ShipFlagKaNoBuFigure(int playerId, bool visibleForAllPlayers, int winNumber)
-            : base(playerId, FigureTypes.ShipFlag, visibleForAllPlayers, winNumber)
+            : base(playerId, visibleForAllPlayers, winNumber)
         {
         }
+
+        public override FigureTypes FigureType => FigureTypes.ShipFlag;
 
         public override bool IsMoveValid(KaNoBuMoveResponseModel playerMove)
         {
