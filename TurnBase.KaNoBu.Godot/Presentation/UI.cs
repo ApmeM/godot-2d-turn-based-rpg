@@ -9,33 +9,19 @@ using TurnBase.KaNoBu;
 public partial class UI
 {
     [Export]
-    public List<PackedScene> Levels;
-
-    [Export]
     public PackedScene GameField;
-
-    [Export]
-    public PackedScene Replay;
 
     public override void _Ready()
     {
+        base._Ready();
+
         this.FillMembers();
 
         this.startServerButton.Connect("pressed", this, nameof(StartButtonClicked));
         this.startClientButton.Connect("pressed", this, nameof(StartButtonClicked));
-        this.startReplayButton.Connect("pressed", this, nameof(StartButtonClicked));
-        this.startLevelsButton.Connect("pressed", this, nameof(StartButtonClicked));
 
         this.serverMyIpInfo.Text = "Your IP address: " + string.Join(", ", IP.GetLocalAddresses().Cast<string>().Where(a => !a.Contains(":")));
         this.clientMyIpInfo.Text = "Your IP address: " + string.Join(", ", IP.GetLocalAddresses().Cast<string>().Where(a => !a.Contains(":")));
-
-        if (Levels != null)
-        {
-            for (int i = 0; i < Levels.Count; i++)
-            {
-                this.levelType.AddItem($"{i}");
-            }
-        }
     }
 
     [Signal]
@@ -45,8 +31,6 @@ public partial class UI
     {
         this.EmitSignal(nameof(StartGameEventhandler));
     }
-
-    private List<ICommunicationModel> lastReplay;
 
     public GameField BuildGame()
     {
@@ -94,10 +78,6 @@ public partial class UI
                         field.Game.AddGameLogListener(field);
                     }
 
-                    var memoryReplay = new MemoryStorageEventListener<KaNoBuMoveNotificationModel>();
-                    this.lastReplay = memoryReplay.Events;
-                    field.Game.AddGameLogListener(memoryReplay);
-                    this.startReplayButton.Disabled = false;
                     break;
                 }
             case 1:
@@ -113,31 +93,6 @@ public partial class UI
                         field.Game.AddGameLogListener(field);
                     }
 
-                    var memoryReplay = new MemoryStorageEventListener<KaNoBuMoveNotificationModel>();
-                    this.lastReplay = memoryReplay.Events;
-                    field.Game.AddGameLogListener(memoryReplay);
-                    this.startReplayButton.Disabled = false;
-                    break;
-                }
-            case 2:
-                {
-                    // Replay
-                    field = this.Replay.Instance<GameField>();
-
-                    if (lastReplay == null)
-                    {
-                        throw new InvalidOperationException("No replay found!");
-                    }
-                    field.Game = new ReplayGame<KaNoBuInitModel, KaNoBuInitResponseModel, KaNoBuMoveModel, KaNoBuMoveResponseModel, KaNoBuMoveNotificationModel>(lastReplay);
-                    field.Game.AddGameLogListener(field);
-                    break;
-                }
-            case 3:
-                {
-                    // Levels
-                    var levelName = this.levelType.GetItemText(this.levelType.GetSelectedId());
-                    field = this.Levels[int.Parse(levelName)].Instance<LevelBase>();
-                    ((LevelBase)field).Initialize();
                     break;
                 }
             default:

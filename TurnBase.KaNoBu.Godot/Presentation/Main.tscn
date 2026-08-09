@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Presentation/Main.cs" type="Script" id=1]
 [ext_resource path="res://gd-draggableCamera/DraggableCamera.tscn" type="PackedScene" id=2]
@@ -6,15 +6,55 @@
 [ext_resource path="res://Presentation/UI.tscn" type="PackedScene" id=4]
 [ext_resource path="res://gd-popups/CustomPopup.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Presentation/assets/button-menu.png" type="Texture" id=6]
+[ext_resource path="res://Presentation/Levels/LevelMap.tscn" type="PackedScene" id=7]
 
 [node name="Main" type="Node"]
 script = ExtResource( 1 )
+Replay = ExtResource( 3 )
 
-[node name="InfinityGameField" parent="." instance=ExtResource( 3 )]
+[node name="LevelMap" parent="." instance=ExtResource( 7 )]
 
 [node name="UI" parent="." instance=ExtResource( 4 )]
+visible = false
 GameField = ExtResource( 3 )
-Replay = ExtResource( 3 )
+
+[node name="GameOverPopup" parent="." instance=ExtResource( 5 )]
+layer = 11
+visible = false
+Title = "Game over"
+
+[node name="CustomPopupContainer" parent="GameOverPopup" index="1"]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = -154.0
+margin_top = -63.5
+margin_right = 154.0
+margin_bottom = 63.5
+
+[node name="HeaderMargin" parent="GameOverPopup/CustomPopupContainer/HeaderCenter" index="0"]
+margin_left = 104.0
+margin_right = 204.0
+
+[node name="TitleBackground" parent="GameOverPopup/CustomPopupContainer/HeaderCenter/HeaderMargin" index="0"]
+margin_right = 100.0
+
+[node name="TitleMargin" parent="GameOverPopup/CustomPopupContainer/HeaderCenter/HeaderMargin" index="1"]
+margin_right = 100.0
+
+[node name="TitleLabel" parent="GameOverPopup/CustomPopupContainer/HeaderCenter/HeaderMargin/TitleMargin" index="0"]
+margin_right = 90.0
+text = "Game over"
+
+[node name="WinnerLabel" type="Label" parent="GameOverPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin" index="0"]
+margin_left = 9.0
+margin_top = 37.0
+margin_right = 281.0
+margin_bottom = 51.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "WINNER"
+align = 1
 
 [node name="MainMenu" type="CanvasLayer" parent="."]
 layer = 10
@@ -25,6 +65,25 @@ anchor_right = 1.0
 margin_left = -68.0
 margin_bottom = 64.0
 texture_normal = ExtResource( 6 )
+
+[node name="CustomButton" type="Button" parent="MainMenu"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -90.0
+margin_top = 40.0
+margin_right = -10.0
+margin_bottom = 80.0
+text = "Custom"
+
+[node name="ReplayButton" type="Button" parent="MainMenu"]
+visible = false
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -90.0
+margin_top = 70.0
+margin_right = -10.0
+margin_bottom = 110.0
+text = "Replay"
 
 [node name="MainMenuPopup" parent="MainMenu" instance=ExtResource( 5 )]
 layer = 11
@@ -37,44 +96,6 @@ margin_right = 281.0
 margin_bottom = 79.0
 text = "Exit"
 
-[node name="GameOverPopup" parent="MainMenu" instance=ExtResource( 5 )]
-layer = 11
-visible = false
-Title = "Game over"
-
-[node name="CustomPopupContainer" parent="MainMenu/GameOverPopup" index="1"]
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -154.0
-margin_top = -63.5
-margin_right = 154.0
-margin_bottom = 63.5
-
-[node name="HeaderMargin" parent="MainMenu/GameOverPopup/CustomPopupContainer/HeaderCenter" index="0"]
-margin_left = 104.0
-margin_right = 204.0
-
-[node name="TitleBackground" parent="MainMenu/GameOverPopup/CustomPopupContainer/HeaderCenter/HeaderMargin" index="0"]
-margin_right = 100.0
-
-[node name="TitleMargin" parent="MainMenu/GameOverPopup/CustomPopupContainer/HeaderCenter/HeaderMargin" index="1"]
-margin_right = 100.0
-
-[node name="TitleLabel" parent="MainMenu/GameOverPopup/CustomPopupContainer/HeaderCenter/HeaderMargin/TitleMargin" index="0"]
-margin_right = 90.0
-text = "Game over"
-
-[node name="WinnerLabel" type="Label" parent="MainMenu/GameOverPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin" index="0"]
-margin_left = 9.0
-margin_top = 37.0
-margin_right = 281.0
-margin_bottom = 51.0
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-text = "WINNER"
-align = 1
-
 [node name="DraggableCamera" parent="." instance=ExtResource( 2 )]
 position = Vector2( -64, -256 )
 anchor_mode = 0
@@ -82,9 +103,8 @@ current = false
 maximumZoom = 2.0
 
 [node name="StaticCamera" type="Camera2D" parent="."]
-position = Vector2( -64, -256 )
 anchor_mode = 0
 current = true
 
+[editable path="GameOverPopup"]
 [editable path="MainMenu/MainMenuPopup"]
-[editable path="MainMenu/GameOverPopup"]

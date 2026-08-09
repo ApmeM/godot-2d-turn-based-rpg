@@ -1,27 +1,67 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://Presentation/UI.cs" type="Script" id=1]
+[ext_resource path="res://gd-popups/CustomPopup.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Presentation/Server.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Presentation/Client.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Presentation/Levels/Level1.tscn" type="PackedScene" id=4]
-[ext_resource path="res://Presentation/Levels/Level2.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Presentation/UI.cs" type="Script" id=4]
 [ext_resource path="res://gd-theme/UITheme.tres" type="Theme" id=6]
 
-[node name="UI" type="CanvasLayer"]
-script = ExtResource( 1 )
-Levels = [ ExtResource( 4 ), ExtResource( 5 ) ]
+[node name="CustomPopup" instance=ExtResource( 1 )]
+script = ExtResource( 4 )
+Title = null
+GameField = null
 
-[node name="Server" parent="." instance=ExtResource( 2 )]
-
-[node name="Client" parent="." instance=ExtResource( 3 )]
-
-[node name="GameType" type="TabContainer" parent="."]
+[node name="CustomPopupContainer" parent="." index="1"]
 anchor_right = 1.0
-margin_bottom = 56.0
+margin_left = 0.0
+margin_top = 0.0
+margin_right = 0.0
+margin_bottom = 575.0
+
+[node name="HeaderCenter" parent="CustomPopupContainer" index="0"]
+margin_right = 640.0
+
+[node name="HeaderMargin" parent="CustomPopupContainer/HeaderCenter" index="0"]
+margin_left = 293.0
+margin_right = 346.0
+
+[node name="PopupContainer" parent="CustomPopupContainer" index="1"]
+margin_right = 640.0
+margin_bottom = 575.0
+
+[node name="MarginContainer" parent="CustomPopupContainer/PopupContainer" index="0"]
+margin_right = 640.0
+margin_bottom = 554.0
+
+[node name="PopupOuterBackground" parent="CustomPopupContainer/PopupContainer/MarginContainer" index="0"]
+margin_right = 640.0
+margin_bottom = 554.0
+
+[node name="PopupOuterMargin" parent="CustomPopupContainer/PopupContainer/MarginContainer" index="1"]
+margin_right = 640.0
+margin_bottom = 554.0
+
+[node name="PopupInnerBackground" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin" index="0"]
+margin_right = 631.0
+margin_bottom = 545.0
+
+[node name="ContentMargin" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin" index="1"]
+margin_right = 631.0
+margin_bottom = 545.0
+
+[node name="Server" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin" index="0" instance=ExtResource( 2 )]
+
+[node name="Client" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin" index="1" instance=ExtResource( 3 )]
+
+[node name="GameType" type="TabContainer" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin" index="2"]
+margin_left = 9.0
+margin_top = 9.0
+margin_right = 613.0
+margin_bottom = 527.0
 theme = ExtResource( 6 )
 tab_align = 0
 
-[node name="Custom" type="VBoxContainer" parent="GameType"]
+[node name="Custom" type="VBoxContainer" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType" index="0"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 5.0
@@ -30,28 +70,28 @@ margin_right = -5.0
 margin_bottom = -5.0
 custom_constants/separation = 10
 
-[node name="ServerMyIpInfo" type="Label" parent="GameType/Custom"]
-margin_right = 630.0
+[node name="ServerMyIpInfo" type="Label" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom" index="0"]
+margin_right = 594.0
 margin_bottom = 38.0
 text = "127.0.0.1"
 autowrap = true
 
-[node name="ServerPlayerContainer" type="GridContainer" parent="GameType/Custom"]
+[node name="ServerPlayerContainer" type="GridContainer" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom" index="1"]
 margin_top = 48.0
-margin_right = 630.0
+margin_right = 594.0
 margin_bottom = 212.0
 columns = 2
 
-[node name="ServerPlayer1Container" type="VBoxContainer" parent="GameType/Custom/ServerPlayerContainer"]
+[node name="ServerPlayer1Container" type="VBoxContainer" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerPlayerContainer" index="0"]
 margin_right = 266.0
 margin_bottom = 80.0
 
-[node name="LabelServerPlayer1" type="Label" parent="GameType/Custom/ServerPlayerContainer/ServerPlayer1Container"]
+[node name="LabelServerPlayer1" type="Label" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerPlayerContainer/ServerPlayer1Container" index="0"]
 margin_right = 266.0
 margin_bottom = 38.0
 text = "Player red"
 
-[node name="ServerPlayer1" type="OptionButton" parent="GameType/Custom/ServerPlayerContainer/ServerPlayer1Container"]
+[node name="ServerPlayer1" type="OptionButton" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerPlayerContainer/ServerPlayer1Container" index="1"]
 margin_top = 42.0
 margin_right = 266.0
 margin_bottom = 80.0
@@ -60,17 +100,17 @@ text = "Human"
 items = [ "None", null, false, 0, null, "Human", null, false, 1, null, "Computer easy", null, false, 2, null, "Remote", null, false, 3, null, "Computer medium", null, false, 4, null ]
 selected = 1
 
-[node name="ServerPlayer2Container" type="VBoxContainer" parent="GameType/Custom/ServerPlayerContainer"]
+[node name="ServerPlayer2Container" type="VBoxContainer" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerPlayerContainer" index="1"]
 margin_left = 270.0
 margin_right = 536.0
 margin_bottom = 80.0
 
-[node name="LabelServerPlayer2" type="Label" parent="GameType/Custom/ServerPlayerContainer/ServerPlayer2Container"]
+[node name="LabelServerPlayer2" type="Label" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerPlayerContainer/ServerPlayer2Container" index="0"]
 margin_right = 266.0
 margin_bottom = 38.0
 text = "Player blue"
 
-[node name="ServerPlayer2" type="OptionButton" parent="GameType/Custom/ServerPlayerContainer/ServerPlayer2Container"]
+[node name="ServerPlayer2" type="OptionButton" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerPlayerContainer/ServerPlayer2Container" index="1"]
 margin_top = 42.0
 margin_right = 266.0
 margin_bottom = 80.0
@@ -79,17 +119,17 @@ text = "Computer easy"
 items = [ "None", null, false, 0, null, "Human", null, false, 1, null, "Computer easy", null, false, 2, null, "Remote", null, false, 3, null, "Computer medium", null, false, 4, null ]
 selected = 2
 
-[node name="ServerPlayer3Container" type="VBoxContainer" parent="GameType/Custom/ServerPlayerContainer"]
+[node name="ServerPlayer3Container" type="VBoxContainer" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerPlayerContainer" index="2"]
 margin_top = 84.0
 margin_right = 266.0
 margin_bottom = 164.0
 
-[node name="LabelServerPlayer3" type="Label" parent="GameType/Custom/ServerPlayerContainer/ServerPlayer3Container"]
+[node name="LabelServerPlayer3" type="Label" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerPlayerContainer/ServerPlayer3Container" index="0"]
 margin_right = 266.0
 margin_bottom = 38.0
 text = "Player white"
 
-[node name="ServerPlayer3" type="OptionButton" parent="GameType/Custom/ServerPlayerContainer/ServerPlayer3Container"]
+[node name="ServerPlayer3" type="OptionButton" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerPlayerContainer/ServerPlayer3Container" index="1"]
 margin_top = 42.0
 margin_right = 266.0
 margin_bottom = 80.0
@@ -98,18 +138,18 @@ text = "Computer medium"
 items = [ "None", null, false, 0, null, "Human", null, false, 1, null, "Computer easy", null, false, 2, null, "Remote", null, false, 3, null, "Computer medium", null, false, 4, null ]
 selected = 4
 
-[node name="ServerPlayer4Container" type="VBoxContainer" parent="GameType/Custom/ServerPlayerContainer"]
+[node name="ServerPlayer4Container" type="VBoxContainer" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerPlayerContainer" index="3"]
 margin_left = 270.0
 margin_top = 84.0
 margin_right = 536.0
 margin_bottom = 164.0
 
-[node name="LabelServerPlayer4" type="Label" parent="GameType/Custom/ServerPlayerContainer/ServerPlayer4Container"]
+[node name="LabelServerPlayer4" type="Label" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerPlayerContainer/ServerPlayer4Container" index="0"]
 margin_right = 266.0
 margin_bottom = 38.0
 text = "Player gray"
 
-[node name="ServerPlayer4" type="OptionButton" parent="GameType/Custom/ServerPlayerContainer/ServerPlayer4Container"]
+[node name="ServerPlayer4" type="OptionButton" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerPlayerContainer/ServerPlayer4Container" index="1"]
 margin_top = 42.0
 margin_right = 266.0
 margin_bottom = 80.0
@@ -118,23 +158,23 @@ text = "Computer medium"
 items = [ "None", null, false, 0, null, "Human", null, false, 1, null, "Computer easy", null, false, 2, null, "Remote", null, false, 3, null, "Computer medium", null, false, 4, null ]
 selected = 4
 
-[node name="ServerPlayerSeparator" type="HSeparator" parent="GameType/Custom"]
+[node name="ServerPlayerSeparator" type="HSeparator" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom" index="2"]
 margin_top = 222.0
-margin_right = 630.0
+margin_right = 594.0
 margin_bottom = 226.0
 
-[node name="ServerSettingsContainer" type="GridContainer" parent="GameType/Custom"]
+[node name="ServerSettingsContainer" type="GridContainer" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom" index="3"]
 margin_top = 236.0
-margin_right = 630.0
+margin_right = 594.0
 margin_bottom = 358.0
 columns = 2
 
-[node name="MapSizeLabel" type="Label" parent="GameType/Custom/ServerSettingsContainer"]
+[node name="MapSizeLabel" type="Label" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerSettingsContainer" index="0"]
 margin_right = 212.0
 margin_bottom = 38.0
 text = "Map size"
 
-[node name="MapSizeSelector" type="HSlider" parent="GameType/Custom/ServerSettingsContainer"]
+[node name="MapSizeSelector" type="HSlider" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerSettingsContainer" index="1"]
 margin_left = 216.0
 margin_right = 366.0
 margin_bottom = 16.0
@@ -147,37 +187,37 @@ rounded = true
 tick_count = 1
 ticks_on_borders = true
 
-[node name="AllShipVisibleLabel" type="Label" parent="GameType/Custom/ServerSettingsContainer"]
+[node name="AllShipVisibleLabel" type="Label" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerSettingsContainer" index="2"]
 margin_top = 42.0
 margin_right = 212.0
 margin_bottom = 80.0
 text = "All ships visible"
 
-[node name="AllShipsVisibleSelector" type="CheckBox" parent="GameType/Custom/ServerSettingsContainer"]
+[node name="AllShipsVisibleSelector" type="CheckBox" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerSettingsContainer" index="3"]
 margin_left = 216.0
 margin_top = 42.0
 margin_right = 366.0
 margin_bottom = 80.0
 
-[node name="WithDocksLabel" type="Label" parent="GameType/Custom/ServerSettingsContainer"]
+[node name="WithDocksLabel" type="Label" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerSettingsContainer" index="4"]
 margin_top = 84.0
 margin_right = 212.0
 margin_bottom = 122.0
 text = "With docks"
 
-[node name="WithDocksSelector" type="CheckBox" parent="GameType/Custom/ServerSettingsContainer"]
+[node name="WithDocksSelector" type="CheckBox" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerSettingsContainer" index="5"]
 margin_left = 216.0
 margin_top = 84.0
 margin_right = 366.0
 margin_bottom = 122.0
 
-[node name="StartServerButton" type="Button" parent="GameType/Custom"]
+[node name="StartServerButton" type="Button" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom" index="4"]
 margin_top = 368.0
-margin_right = 630.0
+margin_right = 594.0
 margin_bottom = 468.0
 text = "Start"
 
-[node name="Connect" type="VBoxContainer" parent="GameType"]
+[node name="Connect" type="VBoxContainer" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType" index="1"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -186,13 +226,13 @@ margin_top = 45.0
 margin_right = -5.0
 margin_bottom = -5.0
 
-[node name="ClientMyIpInfo" type="Label" parent="GameType/Connect"]
+[node name="ClientMyIpInfo" type="Label" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Connect" index="0"]
 margin_right = 630.0
 margin_bottom = 38.0
 text = "127.0.0.1"
 autowrap = true
 
-[node name="ServerIpInput" type="TextEdit" parent="GameType/Connect"]
+[node name="ServerIpInput" type="TextEdit" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Connect" index="1"]
 margin_top = 42.0
 margin_right = 630.0
 margin_bottom = 84.0
@@ -200,7 +240,7 @@ rect_min_size = Vector2( 0, 42 )
 rect_clip_content = true
 text = "127.0.0.1"
 
-[node name="ClientPlayer" type="OptionButton" parent="GameType/Connect"]
+[node name="ClientPlayer" type="OptionButton" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Connect" index="2"]
 margin_top = 88.0
 margin_right = 630.0
 margin_bottom = 126.0
@@ -209,43 +249,13 @@ text = "Human"
 items = [ "None", null, false, 0, null, "Human", null, false, 1, null, "Computer easy", null, false, 2, null, "Remote", null, false, 3, null, "Computer medium", null, false, 4, null ]
 selected = 1
 
-[node name="StartClientButton" type="Button" parent="GameType/Connect"]
+[node name="StartClientButton" type="Button" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Connect" index="3"]
 margin_top = 130.0
 margin_right = 630.0
 margin_bottom = 230.0
 text = "Start"
 
-[node name="Replays" type="VBoxContainer" parent="GameType"]
-visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 5.0
-margin_top = 45.0
-margin_right = -5.0
-margin_bottom = -5.0
-
-[node name="StartReplayButton" type="Button" parent="GameType/Replays"]
-margin_right = 630.0
-margin_bottom = 100.0
-disabled = true
-text = "Start"
-
-[node name="Campaign" type="VBoxContainer" parent="GameType"]
-visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 5.0
-margin_top = 45.0
-margin_right = -5.0
-margin_bottom = -5.0
-
-[node name="LevelType" type="OptionButton" parent="GameType/Campaign"]
-margin_right = 630.0
-margin_bottom = 38.0
-rect_min_size = Vector2( 150, 0 )
-
-[node name="StartLevelsButton" type="Button" parent="GameType/Campaign"]
-margin_top = 42.0
-margin_right = 630.0
-margin_bottom = 142.0
-text = "Start"
+[node name="CloseButton" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin" index="2"]
+visible = true
+margin_left = 584.0
+margin_right = 631.0
