@@ -1,12 +1,14 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Presentation/Main.cs" type="Script" id=1]
 [ext_resource path="res://gd-draggableCamera/DraggableCamera.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Presentation/CustomField.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Presentation/UI.tscn" type="PackedScene" id=4]
 [ext_resource path="res://gd-popups/CustomPopup.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Presentation/assets/button-menu.png" type="Texture" id=6]
 [ext_resource path="res://Presentation/Levels/LevelMap.tscn" type="PackedScene" id=7]
+[ext_resource path="res://Presentation/assets/button-custom.png" type="Texture" id=8]
+[ext_resource path="res://Presentation/assets/button-replay.png" type="Texture" id=9]
+[ext_resource path="res://Presentation/assets/button-mainmenu.png" type="Texture" id=10]
 
 [node name="Main" type="Node"]
 script = ExtResource( 1 )
@@ -14,7 +16,50 @@ Replay = ExtResource( 3 )
 
 [node name="LevelMap" parent="." instance=ExtResource( 7 )]
 
+[node name="MainMenu" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="ScreeButtonContainer" type="VBoxContainer" parent="MainMenu"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -120.0
+margin_bottom = 128.0
+
+[node name="MainMenuButton" type="TextureButton" parent="MainMenu/ScreeButtonContainer"]
+margin_right = 120.0
+margin_bottom = 40.0
+texture_normal = ExtResource( 10 )
+
+[node name="CustomButton" type="TextureButton" parent="MainMenu/ScreeButtonContainer"]
+margin_top = 44.0
+margin_right = 120.0
+margin_bottom = 84.0
+texture_normal = ExtResource( 8 )
+texture_pressed = ExtResource( 8 )
+texture_hover = ExtResource( 8 )
+
+[node name="ReplayButton" type="TextureButton" parent="MainMenu/ScreeButtonContainer"]
+visible = false
+margin_top = 88.0
+margin_right = 120.0
+margin_bottom = 128.0
+texture_normal = ExtResource( 9 )
+texture_pressed = ExtResource( 9 )
+texture_hover = ExtResource( 9 )
+
+[node name="MainMenuPopup" parent="." instance=ExtResource( 5 )]
+layer = 11
+visible = false
+
+[node name="ExitGameButton" type="Button" parent="MainMenuPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin" index="0"]
+margin_left = 9.0
+margin_top = 9.0
+margin_right = 281.0
+margin_bottom = 79.0
+text = "Exit"
+
 [node name="UI" parent="." instance=ExtResource( 4 )]
+layer = 11
 visible = false
 GameField = ExtResource( 3 )
 
@@ -56,46 +101,6 @@ custom_colors/font_color = Color( 0, 0, 0, 1 )
 text = "WINNER"
 align = 1
 
-[node name="MainMenu" type="CanvasLayer" parent="."]
-layer = 10
-
-[node name="MainMenuButton" type="TextureButton" parent="MainMenu"]
-anchor_left = 1.0
-anchor_right = 1.0
-margin_left = -68.0
-margin_bottom = 64.0
-texture_normal = ExtResource( 6 )
-
-[node name="CustomButton" type="Button" parent="MainMenu"]
-anchor_left = 1.0
-anchor_right = 1.0
-margin_left = -90.0
-margin_top = 40.0
-margin_right = -10.0
-margin_bottom = 80.0
-text = "Custom"
-
-[node name="ReplayButton" type="Button" parent="MainMenu"]
-visible = false
-anchor_left = 1.0
-anchor_right = 1.0
-margin_left = -90.0
-margin_top = 70.0
-margin_right = -10.0
-margin_bottom = 110.0
-text = "Replay"
-
-[node name="MainMenuPopup" parent="MainMenu" instance=ExtResource( 5 )]
-layer = 11
-visible = false
-
-[node name="ExitGameButton" type="Button" parent="MainMenu/MainMenuPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin" index="0"]
-margin_left = 9.0
-margin_top = 9.0
-margin_right = 281.0
-margin_bottom = 79.0
-text = "Exit"
-
 [node name="DraggableCamera" parent="." instance=ExtResource( 2 )]
 position = Vector2( -64, -256 )
 anchor_mode = 0
@@ -106,5 +111,5 @@ maximumZoom = 2.0
 anchor_mode = 0
 current = true
 
+[editable path="MainMenuPopup"]
 [editable path="GameOverPopup"]
-[editable path="MainMenu/MainMenuPopup"]
