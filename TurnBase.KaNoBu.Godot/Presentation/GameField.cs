@@ -14,7 +14,7 @@ public partial class GameField :
     [Export]
     public PackedScene UnitScene;
     public int playerId { get; private set; } = -1;
-    public List<int> Winners{ get; private set; }
+    public List<int> Winners { get; private set; }
     private KaNoBuFieldMemorization memorizedField = new KaNoBuFieldMemorization();
     public IGame<KaNoBuInitModel, KaNoBuInitResponseModel, KaNoBuMoveModel, KaNoBuMoveResponseModel, KaNoBuMoveNotificationModel> Game;
 
@@ -32,21 +32,51 @@ public partial class GameField :
     public async Task<MakeTurnResponseModel<KaNoBuMoveResponseModel>> MakeTurn(MakeTurnModel<KaNoBuMoveModel> model, CancellationToken token = default)
     {
         this.timerLabel.ShowMessage("Your turn", 1f);
-
         this.memorizedField.SynchronizeField((Field2D)model.Request.Field);
-
         this.UpdateKnownShips();
+        var pendingTurnMoves = new List<KaNoBuMoveResponseModel.MoveStep>();
 
-        var (from, to) = await this.ToMySignal<Vector2, Vector2>(nameof(MoveDone)).WrapCancellation(token);
-
-        return new MakeTurnResponseModel<KaNoBuMoveResponseModel>
+        while (true)
         {
-            Response = new KaNoBuMoveResponseModel(
-                KaNoBuMoveResponseModel.MoveStatus.MAKE_TURN,
+            var moveTask = this.ToMySignal<Vector2, Vector2>(nameof(MoveDone)).WrapCancellation(token);
+            var confirmTask = this.ToMySignal(nameof(TurnConfirmed)).WrapCancellation(token);
+            var cancelTask = this.ToMySignal(nameof(TurnCancelled)).WrapCancellation(token);
+            var winner = await Task.WhenAny(moveTask, confirmTask, cancelTask);
+
+            if (winner == cancelTask)
+            {
+                pendingTurnMoves.Clear();
+                this.ClearSelection();
+                this.timerLabel.ShowMessage("Move cancelled. Start again.", 1.5f);
+                continue;
+            }
+
+            if (winner == confirmTask)
+            {
+                if (pendingTurnMoves.Count == 0)
+                {
+                    continue;
+                }
+
+                var response = new KaNoBuMoveResponseModel(pendingTurnMoves);
+                return new MakeTurnResponseModel<KaNoBuMoveResponseModel>
+                {
+                    Response = response
+                };
+            }
+
+            var (from, to) = await moveTask;
+            if (from == to)
+            {
+                continue;
+            }
+
+            pendingTurnMoves.Add(new KaNoBuMoveResponseModel.MoveStep(
                 new Point { X = (int)from.x, Y = (int)from.y },
                 new Point { X = (int)to.x, Y = (int)to.y }
-            )
-        };
+            ));
+            this.timerLabel.ShowMessage($"Queued {pendingTurnMoves.Count} move(s). Press Enter to confirm or Esc to cancel.", 1.2f);
+        }
     }
 
     #endregion
@@ -117,60 +147,60 @@ public partial class GameField :
         this.UpdateKnownShips();
     }
 
-    public void GamePlayerTurn(int playerNumber, KaNoBuMoveNotificationModel notification)
+    public void GamePlayerTurn(int playerNumber, KaNoBuMoveNotificationModel turnNotification)
     {
-        this.memorizedField.UpdateKnownShips(notification);
+        this.memorizedField.UpdateKnownShips(turnNotification);
 
-        if (notification.move.Status == KaNoBuMoveResponseModel.MoveStatus.SKIP_TURN)
+        if (turnNotification.MoveNotifications.Count == 0)
         {
             return;
         }
 
-        var fromMapPos = new Vector2(notification.move.From.X, notification.move.From.Y);
-        var toMapPos = new Vector2(notification.move.To.X, notification.move.To.Y);
-        var toWorldPos = this.field.MapToWorld(toMapPos) + this.field.CellSize / 2;
-
-        var allUnits = this.field.GetChildren();
-        var movedUnit = allUnits.Cast<Unit>().First(a => a.TargetPositionMap == fromMapPos && a.PlayerNumber == playerNumber);
-
-        if (notification.battle.HasValue)
+        foreach (var notification in turnNotification.MoveNotifications)
         {
-            var defenderUnit = allUnits.Cast<Unit>().First(a => a.TargetPositionMap == toMapPos);
-
-            switch (notification.battle.Value.battleResult)
+            var fromMapPos = new Vector2(notification.From.X, notification.From.Y);
+            var toMapPos = new Vector2(notification.To.X, notification.To.Y);
+            var toWorldPos = this.field.MapToWorld(toMapPos) + this.field.CellSize / 2;
+            var allUnits = this.field.GetChildren();
+            var movedUnit = allUnits.Cast<Unit>().First(a => a.TargetPositionMap == fromMapPos && a.PlayerNumber == playerNumber);
+            if (notification.Battle.HasValue)
             {
-                case KaNoBuMoveNotificationModel.BattleResult.Draw:
-                    break;
-                case KaNoBuMoveNotificationModel.BattleResult.AttackerWon:
-                    // Attacker won
-                    movedUnit.RotateUnitTo(toWorldPos);
-                    movedUnit.Attack();
-                    defenderUnit.UnitHit();
-                    movedUnit.MoveUnitTo(toMapPos, toWorldPos);
-                    break;
-                case KaNoBuMoveNotificationModel.BattleResult.DefenderWon:
-                    // Defender won
-                    if (notification.battle.Value.isMine)
-                    {
+                var defenderUnit = allUnits.Cast<Unit>().First(a => a.TargetPositionMap == toMapPos);
+                switch (notification.Battle.Value.battleResult)
+                {
+                    case KaNoBuMoveNotificationModel.BattleResult.Draw:
+                        break;
+                    case KaNoBuMoveNotificationModel.BattleResult.AttackerWon:
+                        // Attacker won
                         movedUnit.RotateUnitTo(toWorldPos);
                         movedUnit.Attack();
-                        movedUnit.UnitHit();
                         defenderUnit.UnitHit();
-                    }
-                    else
-                    {
-                        defenderUnit.RotateUnitTo(movedUnit.Position);
-                        defenderUnit.Attack();
-                        movedUnit.UnitHit();
-                    }
-                    break;
+                        movedUnit.MoveUnitTo(toMapPos, toWorldPos);
+                        break;
+                    case KaNoBuMoveNotificationModel.BattleResult.DefenderWon:
+                        // Defender won
+                        if (notification.Battle.Value.isMine)
+                        {
+                            movedUnit.RotateUnitTo(toWorldPos);
+                            movedUnit.Attack();
+                            movedUnit.UnitHit();
+                            defenderUnit.UnitHit();
+                        }
+                        else
+                        {
+                            defenderUnit.RotateUnitTo(movedUnit.Position);
+                            defenderUnit.Attack();
+                            movedUnit.UnitHit();
+                        }
+                        break;
+                }
             }
-        }
-        else
-        {
-            // No battle - swim here.
-            movedUnit.RotateUnitTo(toWorldPos);
-            movedUnit.MoveUnitTo(toMapPos, toWorldPos);
+            else
+            {
+                // No battle - swim here.
+                movedUnit.RotateUnitTo(toWorldPos);
+                movedUnit.MoveUnitTo(toMapPos, toWorldPos);
+            }
         }
 
         this.UpdateKnownShips();
@@ -218,6 +248,12 @@ public partial class GameField :
 
     [Signal]
     public delegate void MoveDone(Vector2 mapFrom, Vector2 mapTo);
+
+    [Signal]
+    public delegate void TurnConfirmed();
+
+    [Signal]
+    public delegate void TurnCancelled();
 
     private void ShowSelection(Unit unit)
     {
@@ -284,6 +320,20 @@ public partial class GameField :
     public override void _UnhandledInput(InputEvent @event)
     {
         base._UnhandledInput(@event);
+
+        if (@event.IsActionPressed("ui_accept"))
+        {
+            this.GetTree().SetInputAsHandled();
+            this.EmitSignal(nameof(TurnConfirmed));
+            return;
+        }
+
+        if (@event.IsActionPressed("ui_cancel"))
+        {
+            this.GetTree().SetInputAsHandled();
+            this.EmitSignal(nameof(TurnCancelled));
+            return;
+        }
 
         if (@event.IsActionPressed("left_click"))
         {

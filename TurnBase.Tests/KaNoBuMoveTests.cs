@@ -16,13 +16,11 @@ public class KaNoBuMoveTests
     {
         var figure = KaNoBuFigure.Create(1, figureType, true, 0);
 
-        var adjacentMove = new KaNoBuMoveResponseModel(
-            KaNoBuMoveResponseModel.MoveStatus.MAKE_TURN,
+        var adjacentMove = new KaNoBuMoveResponseModel.MoveStep(
             new Point { X = 1, Y = 1 },
             new Point { X = 1, Y = 2 });
 
-        var nonAdjacentMove = new KaNoBuMoveResponseModel(
-            KaNoBuMoveResponseModel.MoveStatus.MAKE_TURN,
+        var nonAdjacentMove = new KaNoBuMoveResponseModel.MoveStep(
             new Point { X = 1, Y = 1 },
             new Point { X = 3, Y = 3 });
 

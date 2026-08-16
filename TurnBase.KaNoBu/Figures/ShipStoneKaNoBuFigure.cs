@@ -9,9 +9,9 @@ namespace TurnBase.KaNoBu
 
         public override FigureTypes FigureType => FigureTypes.ShipStone;
 
-        public override bool IsMoveValid(KaNoBuMoveResponseModel playerMove)
+        public override bool IsMoveValid(KaNoBuMoveResponseModel.MoveStep moveStep)
         {
-            return playerMove.From.IsAdjacentTo(playerMove.To);
+            return moveStep.From.IsAdjacentTo(moveStep.To);
         }
 
         public override KaNoBuFigure ResolveBattle(KaNoBuFigure defender)

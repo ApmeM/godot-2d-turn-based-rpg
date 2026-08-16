@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace TurnBase.KaNoBu
 {
@@ -38,26 +41,42 @@ namespace TurnBase.KaNoBu
 
     public class KaNoBuMoveResponseModel
     {
-        public KaNoBuMoveResponseModel(MoveStatus status, Point from, Point to)
+        public struct MoveStep
         {
-            Status = status;
-            From = from;
-            To = to;
+            public MoveStep(Point from, Point to)
+            {
+                From = from;
+                To = to;
+            }
+
+            public readonly Point From;
+            public readonly Point To;
         }
 
-        public enum MoveStatus
+        public KaNoBuMoveResponseModel(List<MoveStep> moves)
         {
-            MAKE_TURN,
-            SKIP_TURN
+            Moves = moves ?? new List<MoveStep>();
         }
 
-        public readonly MoveStatus Status;
-        public readonly Point From;
-        public readonly Point To;
+        public readonly List<MoveStep> Moves;
     }
 
     public class KaNoBuMoveNotificationModel
     {
+        public class MoveNotification
+        {
+            public MoveNotification(Point from, Point to, Battle? battle = null)
+            {
+                From = from;
+                To = to;
+                Battle = battle;
+            }
+
+            public readonly Point From;
+            public readonly Point To;
+            public readonly Battle? Battle;
+        }
+
         public struct Battle
         {
             public BattleResult battleResult;
@@ -72,30 +91,31 @@ namespace TurnBase.KaNoBu
             DefenderWon
         }
 
-        public KaNoBuMoveNotificationModel(KaNoBuMoveResponseModel move, Battle? battle = null)
+        public KaNoBuMoveNotificationModel(List<MoveNotification> moveNotifications)
         {
-            this.move = move;
-            this.battle = battle;
+            this.MoveNotifications = moveNotifications ?? new List<MoveNotification>();
         }
 
-        public readonly KaNoBuMoveResponseModel move;
-        public readonly Battle? battle;
+        public readonly List<MoveNotification> MoveNotifications;
 
         public override string ToString()
         {
-            if (move.Status == KaNoBuMoveResponseModel.MoveStatus.SKIP_TURN)
+            if (this.MoveNotifications.Count == 0)
             {
-                return $"Player skip turn.";
+                return "Player skip turn.";
+            }
+            StringBuilder result = new StringBuilder();
+
+            foreach (var move in this.MoveNotifications)
+            {
+                result.AppendLine($"Player move from {move.From} to {move.To}.");
+                if (move.Battle.HasValue)
+                {
+                    result.AppendLine($"Battle result: {move.Battle.Value.battleResult} (IsFlag = {move.Battle.Value.isDefenderFlag})");
+                }
             }
 
-            var result = $"Player move {move.From}-{move.To}.";
-
-            if (battle != null)
-            {
-                result += $"\nBattle result: {battle.Value.battleResult} (IsFlag = {battle.Value.isDefenderFlag})";
-            }
-
-            return result;
+            return result.ToString();
         }
     }
 }

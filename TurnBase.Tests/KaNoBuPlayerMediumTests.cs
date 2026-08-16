@@ -21,6 +21,6 @@ public class KaNoBuPlayerMediumTests
             Request = new KaNoBuMoveModel(field)
         });
 
-        Assert.That(result.Response.Status, Is.EqualTo(KaNoBuMoveResponseModel.MoveStatus.SKIP_TURN));
+        Assert.That(result.Response.Moves.Count, Is.EqualTo(0));
     }
 }

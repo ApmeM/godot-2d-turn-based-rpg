@@ -74,7 +74,7 @@ namespace TurnBase.KaNoBu
             {
                 return new MakeTurnResponseModel<KaNoBuMoveResponseModel>
                 {
-                    Response = new KaNoBuMoveResponseModel(KaNoBuMoveResponseModel.MoveStatus.SKIP_TURN, default, default)
+                    Response = new KaNoBuMoveResponseModel(null)
                 };
             }
 
@@ -138,7 +138,8 @@ namespace TurnBase.KaNoBu
             var shipTo = field[to] as KaNoBuFigure;
             if (shipTo == null || shipTo.PlayerId != this.myNumber)
             {
-                availableShips.Add(new KaNoBuMoveResponseModel(KaNoBuMoveResponseModel.MoveStatus.MAKE_TURN, from, to));
+                availableShips.Add(new KaNoBuMoveResponseModel(
+                    new List<KaNoBuMoveResponseModel.MoveStep> { new KaNoBuMoveResponseModel.MoveStep(from, to) }));
             }
         }
     }

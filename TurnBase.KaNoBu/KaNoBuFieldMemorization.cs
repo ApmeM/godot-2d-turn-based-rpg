@@ -48,100 +48,100 @@ namespace TurnBase.KaNoBu
             }
         }
 
-        public void UpdateKnownShips(KaNoBuMoveNotificationModel notification)
+        public void UpdateKnownShips(KaNoBuMoveNotificationModel moveNotification)
         {
-            if (this.Field == null || notification.move.Status == KaNoBuMoveResponseModel.MoveStatus.SKIP_TURN)
+            if (this.Field == null || moveNotification.MoveNotifications.Count == 0)
             {
                 return;
             }
 
-            var fromMapPos = notification.move.From;
-            var toMapPos = notification.move.To;
-
-            var movedUnit = this.Field[fromMapPos] as KaNoBuFigure;
-            var defenderUnit = this.Field[toMapPos] as KaNoBuFigure;
-
-            this.Field[fromMapPos] = null;
-            this.Field[toMapPos] = null;
-
-            if (notification.battle.HasValue)
+            foreach (var notification in moveNotification.MoveNotifications)
             {
-                switch (notification.battle.Value.battleResult)
+                var fromMapPos = notification.From;
+                var toMapPos = notification.To;
+
+                var movedUnit = this.Field[fromMapPos] as KaNoBuFigure;
+                var defenderUnit = this.Field[toMapPos] as KaNoBuFigure;
+
+                this.Field[fromMapPos] = null;
+                this.Field[toMapPos] = null;
+
+                if (notification.Battle.HasValue)
                 {
-                    case KaNoBuMoveNotificationModel.BattleResult.Draw:
+                    switch (notification.Battle.Value.battleResult)
                     {
-                        var movedType = movedUnit.FigureType;
-                        var defenderType = defenderUnit.FigureType;
-                        if (movedType != KaNoBuFigure.FigureTypes.Unknown)
+                        case KaNoBuMoveNotificationModel.BattleResult.Draw:
                         {
-                            defenderUnit = defenderUnit.WithFigureType(movedType);
-                        }
-                        if (defenderType != KaNoBuFigure.FigureTypes.Unknown)
-                        {
-                            movedUnit = movedUnit.WithFigureType(defenderType);
-                        }
-                        this.Field[fromMapPos] = movedUnit;
-                        this.Field[toMapPos] = defenderUnit;
-                        break;
-                    }
-                    case KaNoBuMoveNotificationModel.BattleResult.AttackerWon:
-                    {
-                        // Attacker won
-                        if (movedUnit.FigureType == KaNoBuFigure.FigureTypes.ShipUniversal)
-                        {
-                            movedUnit = movedUnit.WithFigureType(KaNoBuFigure.FigureTypes.Unknown);
-                        }
-                        if (notification.battle.Value.isDefenderFlag)
-                        {
-                            defenderUnit = defenderUnit.WithFigureType(KaNoBuFigure.FigureTypes.ShipFlag);
-                        }
-                        else
-                        {
-                            if (movedUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
+                            var movedType = movedUnit.FigureType;
+                            var defenderType = defenderUnit.FigureType;
+                            if (movedType != KaNoBuFigure.FigureTypes.Unknown)
                             {
-                                defenderUnit = defenderUnit.WithFigureType(KaNoBuRules.Looser[movedUnit.FigureType]);
+                                defenderUnit = defenderUnit.WithFigureType(movedType);
                             }
-                            if (defenderUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
+                            if (defenderType != KaNoBuFigure.FigureTypes.Unknown)
                             {
-                                movedUnit = movedUnit.WithFigureType(KaNoBuRules.Winner[defenderUnit.FigureType]);
+                                movedUnit = movedUnit.WithFigureType(defenderType);
                             }
-                        }
-                        this.Field[toMapPos] = movedUnit;
-                        break;
-                    }
-                    case KaNoBuMoveNotificationModel.BattleResult.DefenderWon:
-                    {
-                        // Defender won
-                        if (notification.battle.Value.isMine)
-                        {
-                            defenderUnit = defenderUnit.WithFigureType(KaNoBuFigure.FigureTypes.ShipMine);
-                        }
-                        else
-                        {
-                            if (defenderUnit.FigureType == KaNoBuFigure.FigureTypes.ShipUniversal)
-                            {
-                                defenderUnit = defenderUnit.WithFigureType(KaNoBuFigure.FigureTypes.Unknown);
-                            }
-
-                            if (movedUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
-                            {
-                                defenderUnit = defenderUnit.WithFigureType(KaNoBuRules.Winner[movedUnit.FigureType]);
-                            }
-                            if (defenderUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
-                            {
-                                movedUnit = movedUnit.WithFigureType(KaNoBuRules.Looser[defenderUnit.FigureType]);
-                            }
-
+                            this.Field[fromMapPos] = movedUnit;
                             this.Field[toMapPos] = defenderUnit;
+                            break;
                         }
-                        break;
+                        case KaNoBuMoveNotificationModel.BattleResult.AttackerWon:
+                        {
+                            if (movedUnit.FigureType == KaNoBuFigure.FigureTypes.ShipUniversal)
+                            {
+                                movedUnit = movedUnit.WithFigureType(KaNoBuFigure.FigureTypes.Unknown);
+                            }
+                            if (notification.Battle.Value.isDefenderFlag)
+                            {
+                                defenderUnit = defenderUnit.WithFigureType(KaNoBuFigure.FigureTypes.ShipFlag);
+                            }
+                            else
+                            {
+                                if (movedUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
+                                {
+                                    defenderUnit = defenderUnit.WithFigureType(KaNoBuRules.Looser[movedUnit.FigureType]);
+                                }
+                                if (defenderUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
+                                {
+                                    movedUnit = movedUnit.WithFigureType(KaNoBuRules.Winner[defenderUnit.FigureType]);
+                                }
+                            }
+                            this.Field[toMapPos] = movedUnit;
+                            break;
+                        }
+                        case KaNoBuMoveNotificationModel.BattleResult.DefenderWon:
+                        {
+                            if (notification.Battle.Value.isMine)
+                            {
+                                defenderUnit = defenderUnit.WithFigureType(KaNoBuFigure.FigureTypes.ShipMine);
+                            }
+                            else
+                            {
+                                if (defenderUnit.FigureType == KaNoBuFigure.FigureTypes.ShipUniversal)
+                                {
+                                    defenderUnit = defenderUnit.WithFigureType(KaNoBuFigure.FigureTypes.Unknown);
+                                }
+
+                                if (movedUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
+                                {
+                                    defenderUnit = defenderUnit.WithFigureType(KaNoBuRules.Winner[movedUnit.FigureType]);
+                                }
+                                if (defenderUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
+                                {
+                                    movedUnit = movedUnit.WithFigureType(KaNoBuRules.Looser[defenderUnit.FigureType]);
+                                }
+
+                                this.Field[toMapPos] = defenderUnit;
+                            }
+                            break;
+                        }
                     }
                 }
-            }
-            else
-            {
-                // No battle - swim here.
-                this.Field[toMapPos] = movedUnit;
+                else
+                {
+                    this.Field[toMapPos] = movedUnit;
+                }
             }
         }
     }

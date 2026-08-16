@@ -54,7 +54,7 @@ namespace TurnBase.KaNoBu
             {
                 return new MakeTurnResponseModel<KaNoBuMoveResponseModel>
                 {
-                    Response = new KaNoBuMoveResponseModel(KaNoBuMoveResponseModel.MoveStatus.SKIP_TURN, default, default)
+                    Response = new KaNoBuMoveResponseModel(null)
                 };
             }
 
@@ -68,9 +68,18 @@ namespace TurnBase.KaNoBu
         }
         private int EvaluateMove(IField mainField, KaNoBuMoveResponseModel a)
         {
+            if (a.Moves.Count == 0)
+            {
+                return 0;
+            }
+            
+            var move = a.Moves[0];
+            var from = move.From;
+            var to = move.To;
+            
             var field = (Field2D)mainField;
-            var shipFrom = field[a.From] as KaNoBuFigure;
-            var shipTo = field[a.To] as KaNoBuFigure;
+            var shipFrom = field[from] as KaNoBuFigure;
+            var shipTo = field[to] as KaNoBuFigure;
             if (shipTo != null && shipTo.PlayerId != this.myNumber)
             {
                 if (shipTo.FigureType == KaNoBuFigure.FigureTypes.Unknown)
@@ -92,12 +101,12 @@ namespace TurnBase.KaNoBu
             var enemyNearby = false;
             foreach (var dir in directions)
             {
-                var to = new Point { X = a.To.X + dir.X, Y = a.To.Y + dir.Y };
-                if (!field.IsInBounds(to))
+                var checkTo = new Point { X = to.X + dir.X, Y = to.Y + dir.Y };
+                if (!field.IsInBounds(checkTo))
                 {
                     continue;
                 }
-                var shipNearby = field[to] as KaNoBuFigure;
+                var shipNearby = field[checkTo] as KaNoBuFigure;
                 if (shipNearby != null && shipNearby.PlayerId != this.myNumber)
                 {
                     enemyNearby = true;
@@ -124,8 +133,8 @@ namespace TurnBase.KaNoBu
                         }
                         else
                         {
-                            var dst = Math.Abs(closestEnemy.Value.X - a.From.X) + Math.Abs(closestEnemy.Value.Y - a.From.Y);
-                            var newDst = Math.Abs(p.X - a.From.X) + Math.Abs(p.Y - a.From.Y);
+                            var dst = Math.Abs(closestEnemy.Value.X - from.X) + Math.Abs(closestEnemy.Value.Y - from.Y);
+                            var newDst = Math.Abs(p.X - from.X) + Math.Abs(p.Y - from.Y);
                             if (newDst < dst)
                             {
                                 closestEnemy = p;
@@ -140,8 +149,8 @@ namespace TurnBase.KaNoBu
             }
 
             {
-                var dst = Math.Abs(closestEnemy.Value.X - a.From.X) + Math.Abs(closestEnemy.Value.Y - a.From.Y);
-                var newDst = Math.Abs(closestEnemy.Value.X - a.To.X) + Math.Abs(closestEnemy.Value.Y - a.To.Y);
+                var dst = Math.Abs(closestEnemy.Value.X - from.X) + Math.Abs(closestEnemy.Value.Y - from.Y);
+                var newDst = Math.Abs(closestEnemy.Value.X - to.X) + Math.Abs(closestEnemy.Value.Y - to.Y);
                 return dst > newDst ? 6 : -6; // Prioritize moving to closest Unknown or Flag enemy
             }
         }
@@ -186,7 +195,8 @@ namespace TurnBase.KaNoBu
                         var shipTo = field[to] as KaNoBuFigure;
                         if (shipTo == null || shipTo.PlayerId != this.myNumber)
                         {
-                            yield return new KaNoBuMoveResponseModel(KaNoBuMoveResponseModel.MoveStatus.MAKE_TURN, from, to);
+                            yield return new KaNoBuMoveResponseModel(
+                                new List<KaNoBuMoveResponseModel.MoveStep> { new KaNoBuMoveResponseModel.MoveStep(from, to) });
                         }
                     }
                 }

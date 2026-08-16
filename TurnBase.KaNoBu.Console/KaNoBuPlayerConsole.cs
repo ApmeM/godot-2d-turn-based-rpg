@@ -26,7 +26,11 @@ public class KaNoBuPlayerConsole :
 
         return new MakeTurnResponseModel<KaNoBuMoveResponseModel>
         {
-            Response = new KaNoBuMoveResponseModel(KaNoBuMoveResponseModel.MoveStatus.MAKE_TURN, from.Value, to.Value)
+            Response = new KaNoBuMoveResponseModel(
+                new List<KaNoBuMoveResponseModel.MoveStep>
+                {
+                    new KaNoBuMoveResponseModel.MoveStep(from.Value, to.Value)
+                })
         };
     }
 

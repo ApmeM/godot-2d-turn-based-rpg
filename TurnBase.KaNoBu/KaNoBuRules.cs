@@ -238,18 +238,19 @@ namespace TurnBase.KaNoBu
             }
             else
             {
-                return new KaNoBuMoveResponseModel(KaNoBuMoveResponseModel.MoveStatus.SKIP_TURN, default, default);
+                return new KaNoBuMoveResponseModel(null);
             }
         }
 
         public MoveValidationStatus CheckMove(IField field, int playerNumber, KaNoBuMoveResponseModel playerMove)
         {
-            var mainField = (Field2D)field;
+            // All moves are valid now. If some ship can not move to its destination it will be skipped.
+            return MoveValidationStatus.OK;
+        }
 
-            if (playerMove.Status == KaNoBuMoveResponseModel.MoveStatus.SKIP_TURN)
-            {
-                return MoveValidationStatus.OK;
-            }
+        private MoveValidationStatus CheckMoveStep(IField field, int playerNumber, KaNoBuMoveResponseModel.MoveStep playerMove)
+        {
+            var mainField = (Field2D)field;
 
             if (!mainField.IsInBounds(playerMove.From) || !mainField.IsInBounds(playerMove.To))
             {
@@ -290,11 +291,29 @@ namespace TurnBase.KaNoBu
         public KaNoBuMoveNotificationModel MakeMove(IField field, int playerNumber, KaNoBuMoveResponseModel playerMove)
         {
             var mainField = (Field2D)field;
-            if (playerMove.Status == KaNoBuMoveResponseModel.MoveStatus.SKIP_TURN)
+            var notifications = new List<KaNoBuMoveNotificationModel.MoveNotification>();
+
+            if (playerMove.Moves.Count == 0)
             {
-                return new KaNoBuMoveNotificationModel(playerMove);
+                return new KaNoBuMoveNotificationModel(notifications);
             }
 
+            foreach (var moveStep in playerMove.Moves)
+            {
+                if(CheckMoveStep(mainField, playerNumber, moveStep) != MoveValidationStatus.OK)
+                {
+                    continue;
+                }
+                var stepResult = this.MakeMoveStep(mainField, playerNumber, moveStep);
+                notifications.Add(stepResult);
+            }
+
+            return new KaNoBuMoveNotificationModel(notifications);
+        }
+
+        private KaNoBuMoveNotificationModel.MoveNotification MakeMoveStep(IField field, int playerNumber, KaNoBuMoveResponseModel.MoveStep playerMove)
+        {
+            var mainField = (Field2D)field;
             var from = (KaNoBuFigure)mainField[playerMove.From];
             var to = (KaNoBuFigure)mainField[playerMove.To];
 
@@ -302,7 +321,7 @@ namespace TurnBase.KaNoBu
             {
                 mainField[playerMove.To] = from;
                 mainField[playerMove.From] = null;
-                return new KaNoBuMoveNotificationModel(playerMove);
+                return new KaNoBuMoveNotificationModel.MoveNotification(playerMove.From, playerMove.To);
             }
 
             var winner = this.battle(from, to);
@@ -341,7 +360,7 @@ namespace TurnBase.KaNoBu
                 }
             }
 
-            return new KaNoBuMoveNotificationModel(playerMove, new KaNoBuMoveNotificationModel.Battle
+            var battle = new KaNoBuMoveNotificationModel.Battle
             {
                 battleResult =
                     winner == null ? KaNoBuMoveNotificationModel.BattleResult.Draw :
@@ -350,8 +369,9 @@ namespace TurnBase.KaNoBu
                     throw new Exception("Invalid battle calculation."),
                 isDefenderFlag = to.FigureType == KaNoBuFigure.FigureTypes.ShipFlag,
                 isMine = to.FigureType == KaNoBuFigure.FigureTypes.ShipMine
-            }
-            );
+            };
+
+            return new KaNoBuMoveNotificationModel.MoveNotification(playerMove.From, playerMove.To, battle);
         }
 
         public List<int> findWinners(IField mainField)
