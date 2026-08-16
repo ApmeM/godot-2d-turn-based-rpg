@@ -134,6 +134,8 @@ public class KaNoBuRulesTests
 
         public override KaNoBuFigure.FigureTypes FigureType => _type;
 
+        public override bool IsMoveable => true;
+
         public override bool IsMoveValid(KaNoBuMoveResponseModel.MoveStep moveStep) => true;
 
         public override KaNoBuFigure ResolveBattle(KaNoBuFigure defender)

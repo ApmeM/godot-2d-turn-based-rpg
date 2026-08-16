@@ -9,6 +9,8 @@ namespace TurnBase.KaNoBu
 
         public override FigureTypes FigureType => FigureTypes.ShipScissors;
 
+        public override bool IsMoveable => true;
+
         public override bool IsMoveValid(KaNoBuMoveResponseModel.MoveStep moveStep)
         {
             return moveStep.From.IsAdjacentTo(moveStep.To);

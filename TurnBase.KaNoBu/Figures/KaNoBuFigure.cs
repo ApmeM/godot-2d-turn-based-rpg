@@ -59,6 +59,8 @@ namespace TurnBase.KaNoBu
             }
         }
 
+        public abstract bool IsMoveable { get; }
+
         public abstract bool IsMoveValid(KaNoBuMoveResponseModel.MoveStep moveStep);
 
         public abstract KaNoBuFigure ResolveBattle(KaNoBuFigure defender);

@@ -9,6 +9,8 @@ namespace TurnBase.KaNoBu
 
         public override FigureTypes FigureType => FigureTypes.ShipMine;
 
+        public override bool IsMoveable => false;
+
         public override bool IsMoveValid(KaNoBuMoveResponseModel.MoveStep moveStep)
         {
             return false;

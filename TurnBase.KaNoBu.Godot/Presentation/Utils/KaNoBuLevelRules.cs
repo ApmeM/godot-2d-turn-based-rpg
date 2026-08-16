@@ -17,9 +17,9 @@ public class KaNoBuLevelRules : IGameRules<KaNoBuInitModel, KaNoBuInitResponseMo
         return this.mainRules.AutoMove(mainField, playerNumber);
     }
 
-    public MoveValidationStatus CheckMove(IField mainField, int playerNumber, KaNoBuMoveResponseModel move)
+    public bool IsMoveValid(IField mainField, int playerNumber, KaNoBuMoveResponseModel move)
     {
-        return this.mainRules.CheckMove(mainField, playerNumber, move);
+        return this.mainRules.IsMoveValid(mainField, playerNumber, move);
     }
 
     public List<int> findWinners(IField mainField)

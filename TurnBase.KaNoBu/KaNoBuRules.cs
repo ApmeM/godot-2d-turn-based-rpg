@@ -209,28 +209,17 @@ namespace TurnBase.KaNoBu
                 for (var j = 0; j < mainHeight; j++)
                 {
                     var playerShip = (KaNoBuFigure)mainField[i, j];
-                    if (playerShip == null)
-                    {
-                        continue;
-                    }
+                    canMove = canMove || (
+                        playerShip != null && 
+                        playerShip.PlayerId == playerNumber && 
+                        playerShip.IsMoveable
+                        );
 
-                    if (playerShip.PlayerId != playerNumber)
-                    {
-                        continue;
-                    }
-
-                    if (playerShip.FigureType == KaNoBuFigure.FigureTypes.ShipMine)
-                    {
-                        continue;
-                    }
-
-                    if (playerShip.FigureType == KaNoBuFigure.FigureTypes.ShipFlag)
-                    {
-                        flagFound = true;
-                        continue;
-                    }
-
-                    canMove = true;
+                    flagFound = flagFound || (
+                        playerShip != null && 
+                        playerShip.PlayerId == playerNumber && 
+                        playerShip.FigureType == KaNoBuFigure.FigureTypes.ShipFlag
+                        );
                 }
             }
 
@@ -259,12 +248,10 @@ namespace TurnBase.KaNoBu
         {
             var mainField = (Field2D)field;
 
-            if (!mainField.IsInBounds(playerMove.From) || !mainField.IsInBounds(playerMove.To))
-            {
-                return false;
-            }
-
-            if (mainField.walls[playerMove.To.X, playerMove.To.Y])
+            if (
+                !mainField.IsInBounds(playerMove.From) || 
+                !mainField.IsInBounds(playerMove.To) || 
+                mainField.walls[playerMove.To.X, playerMove.To.Y])
             {
                 return false;
             }
@@ -272,27 +259,11 @@ namespace TurnBase.KaNoBu
             var from = (KaNoBuFigure)mainField[playerMove.From];
             var to = (KaNoBuFigure)mainField[playerMove.To];
 
-            if (from == null)
-            {
-                return false;
-            }
-
-            if (from.PlayerId != playerNumber)
-            {
-                return false;
-            }
-
-            if (!from.IsMoveValid(playerMove))
-            {
-                return false;
-            }
-
-            if (to != null && to.PlayerId == from.PlayerId)
-            {
-                return false;
-            }
-
-            return true;
+            return 
+                from != null && 
+                from.PlayerId == playerNumber && 
+                from.IsMoveValid(playerMove) && 
+                (to == null || to.PlayerId != from.PlayerId);
         }
 
         public KaNoBuMoveNotificationModel MakeMove(IField field, int playerNumber, KaNoBuMoveResponseModel playerMove)
