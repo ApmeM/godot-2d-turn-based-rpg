@@ -182,7 +182,7 @@ rect_min_size = Vector2( 150, 0 )
 min_value = 8.0
 max_value = 20.0
 value = 8.0
-exp_edit = true
+exp_edit = false
 rounded = true
 tick_count = 1
 ticks_on_borders = true
@@ -210,6 +210,26 @@ margin_left = 216.0
 margin_top = 84.0
 margin_right = 366.0
 margin_bottom = 122.0
+
+[node name="MaxMovesPerTurnLabel" type="Label" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerSettingsContainer" index="6"]
+margin_top = 126.0
+margin_right = 212.0
+margin_bottom = 164.0
+text = "Max moves / turn"
+
+[node name="MaxMovesPerTurnSelector" type="HSlider" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom/ServerSettingsContainer" index="7"]
+margin_left = 216.0
+margin_top = 126.0
+margin_right = 366.0
+margin_bottom = 142.0
+rect_min_size = Vector2( 150, 0 )
+min_value = 1.0
+max_value = 20.0
+value = 3.0
+exp_edit = false
+rounded = true
+tick_count = 1
+ticks_on_borders = true
 
 [node name="StartServerButton" type="Button" parent="CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/GameType/Custom" index="4"]
 margin_top = 368.0

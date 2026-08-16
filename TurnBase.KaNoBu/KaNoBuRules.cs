@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TurnBase.KaNoBu
 {
@@ -23,6 +24,7 @@ namespace TurnBase.KaNoBu
 
         public bool AllFiguresVisible;
         public bool WithDocks;
+        public int MaxMovesPerTurn = int.MaxValue;
 
         public KaNoBuRules(int size)
         {
@@ -92,7 +94,7 @@ namespace TurnBase.KaNoBu
                 if (shipN == 2) availableShips.Add(KaNoBuFigure.FigureTypes.ShipPaper);
             }
 
-            return new KaNoBuInitModel(initFieldWidth, initFieldHeight, availableShips);
+            return new KaNoBuInitModel(initFieldWidth, initFieldHeight, availableShips, this.MaxMovesPerTurn);
         }
 
         public bool TryApplyInitResponse(IField field, int playerNumber, KaNoBuInitResponseModel initResponse)
@@ -244,6 +246,19 @@ namespace TurnBase.KaNoBu
 
         public MoveValidationStatus CheckMove(IField field, int playerNumber, KaNoBuMoveResponseModel playerMove)
         {
+            if (this.MaxMovesPerTurn > 0)
+            {
+                var movedFigureCount = playerMove.Moves
+                    .Select(move => move.From)
+                    .Distinct()
+                    .Count();
+
+                if (movedFigureCount > this.MaxMovesPerTurn)
+                {
+                    return MoveValidationStatus.ERROR_INVALID_FIGURE_MOVE;
+                }
+            }
+
             // All moves are valid now. If some ship can not move to its destination it will be skipped.
             return MoveValidationStatus.OK;
         }

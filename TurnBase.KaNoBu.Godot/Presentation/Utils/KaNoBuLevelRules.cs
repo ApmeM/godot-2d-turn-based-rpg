@@ -41,7 +41,7 @@ public class KaNoBuLevelRules : IGameRules<KaNoBuInitModel, KaNoBuInitResponseMo
 
     public KaNoBuInitModel GetInitModel(int playerNumber)
     {
-        return new KaNoBuInitModel(1, 1, new List<KaNoBuFigure.FigureTypes> { KaNoBuFigure.FigureTypes.ShipFlag });
+        return new KaNoBuInitModel(1, 1, new List<KaNoBuFigure.FigureTypes> { KaNoBuFigure.FigureTypes.ShipFlag }, this.mainRules.MaxMovesPerTurn);
     }
 
     public IPlayerRotator GetInitRotator()

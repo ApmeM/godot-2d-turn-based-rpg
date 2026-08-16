@@ -58,6 +58,46 @@ public class KaNoBuRulesTests
     }
 
     [Test]
+    public void TurnRejectsMoreFiguresThanAllowedPerTurn()
+    {
+        var field = Field2D.Create(4, 3);
+        var firstFigure = KaNoBuFigure.Create(1, KaNoBuFigure.FigureTypes.ShipStone, true, 0);
+        var secondFigure = KaNoBuFigure.Create(1, KaNoBuFigure.FigureTypes.ShipPaper, true, 0);
+        var thirdFigure = KaNoBuFigure.Create(1, KaNoBuFigure.FigureTypes.ShipScissors, true, 0);
+        field[0, 0] = firstFigure;
+        field[2, 1] = secondFigure;
+        field[0, 2] = thirdFigure;
+
+        var rules = new KaNoBuRules(6)
+        {
+            MaxMovesPerTurn = 2
+        };
+
+        var move = new KaNoBuMoveResponseModel(
+            new List<KaNoBuMoveResponseModel.MoveStep>
+            {
+                new KaNoBuMoveResponseModel.MoveStep(new Point { X = 0, Y = 0 }, new Point { X = 0, Y = 1 }),
+                new KaNoBuMoveResponseModel.MoveStep(new Point { X = 2, Y = 1 }, new Point { X = 2, Y = 2 }),
+                new KaNoBuMoveResponseModel.MoveStep(new Point { X = 0, Y = 2 }, new Point { X = 1, Y = 2 }),
+            });
+
+        Assert.That(rules.CheckMove(field, 1, move), Is.EqualTo(MoveValidationStatus.ERROR_INVALID_FIGURE_MOVE));
+    }
+
+    [Test]
+    public void InitModelContainsMaxFiguresPerTurn()
+    {
+        var rules = new KaNoBuRules(6)
+        {
+            MaxMovesPerTurn = 4
+        };
+
+        var initModel = rules.GetInitModel(0);
+
+        Assert.That(initModel.MaxMovesPerTurn, Is.EqualTo(4));
+    }
+
+    [Test]
     public void MultiMoveTurnAppliesStepsInOrder()
     {
         var field = Field2D.Create(4, 3);

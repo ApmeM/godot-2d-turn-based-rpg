@@ -14,6 +14,7 @@ public partial class GameField :
     [Export]
     public PackedScene UnitScene;
     public int playerId { get; private set; } = -1;
+    private int maxMovesPerTurn = int.MaxValue;
     public List<int> Winners { get; private set; }
     private KaNoBuFieldMemorization memorizedField = new KaNoBuFieldMemorization();
     public IGame<KaNoBuInitModel, KaNoBuInitResponseModel, KaNoBuMoveModel, KaNoBuMoveResponseModel, KaNoBuMoveNotificationModel> Game;
@@ -25,6 +26,7 @@ public partial class GameField :
     public Task<InitResponseModel<KaNoBuInitResponseModel>> Init(InitModel<KaNoBuInitModel> model, CancellationToken token = default)
     {
         this.playerId = model.PlayerId;
+        this.maxMovesPerTurn = model.Request.MaxMovesPerTurn;
         _ = MoveCameraToPlayer();
         return new KaNoBuPlayerEasy().Init(model, token);
     }
@@ -68,6 +70,12 @@ public partial class GameField :
             var (from, to) = await moveTask;
             if (from == to)
             {
+                continue;
+            }
+
+            if (this.maxMovesPerTurn > 0 && pendingTurnMoves.Count >= this.maxMovesPerTurn)
+            {
+                this.timerLabel.ShowMessage($"Only {this.maxMovesPerTurn} move(s) can be made per turn.", 1.2f);
                 continue;
             }
 
