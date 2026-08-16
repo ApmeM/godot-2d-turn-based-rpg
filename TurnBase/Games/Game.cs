@@ -200,9 +200,9 @@ namespace TurnBase
                     return false;
                 }
 
-                var validTurnStatus = this.rules.CheckMove(this.mainField, playerNumber, makeTurnResponseModel.Response);
+                var validTurnStatus = this.rules.IsMoveValid(this.mainField, playerNumber, makeTurnResponseModel.Response);
 
-                if (validTurnStatus != MoveValidationStatus.OK)
+                if (!validTurnStatus)
                 {
                     continue;
                 }

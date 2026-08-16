@@ -244,37 +244,29 @@ namespace TurnBase.KaNoBu
             }
         }
 
-        public MoveValidationStatus CheckMove(IField field, int playerNumber, KaNoBuMoveResponseModel playerMove)
+        public bool IsMoveValid(IField field, int playerNumber, KaNoBuMoveResponseModel playerMove)
         {
-            if (this.MaxMovesPerTurn > 0)
+            if (playerMove.Moves.Count > this.MaxMovesPerTurn)
             {
-                var movedFigureCount = playerMove.Moves
-                    .Select(move => move.From)
-                    .Distinct()
-                    .Count();
-
-                if (movedFigureCount > this.MaxMovesPerTurn)
-                {
-                    return MoveValidationStatus.ERROR_INVALID_FIGURE_MOVE;
-                }
+                return false;
             }
 
             // All moves are valid now. If some ship can not move to its destination it will be skipped.
-            return MoveValidationStatus.OK;
+            return true;
         }
 
-        private MoveValidationStatus CheckMoveStep(IField field, int playerNumber, KaNoBuMoveResponseModel.MoveStep playerMove)
+        private bool IsMoveValid(IField field, int playerNumber, KaNoBuMoveResponseModel.MoveStep playerMove)
         {
             var mainField = (Field2D)field;
 
             if (!mainField.IsInBounds(playerMove.From) || !mainField.IsInBounds(playerMove.To))
             {
-                return MoveValidationStatus.ERROR_OUTSIDE_FIELD;
+                return false;
             }
 
             if (mainField.walls[playerMove.To.X, playerMove.To.Y])
             {
-                return MoveValidationStatus.ERROR_FIELD_OCCUPIED;
+                return false;
             }
 
             var from = (KaNoBuFigure)mainField[playerMove.From];
@@ -282,25 +274,25 @@ namespace TurnBase.KaNoBu
 
             if (from == null)
             {
-                return MoveValidationStatus.ERROR_MOVE_FROM_NOWHERE;
+                return false;
             }
 
             if (from.PlayerId != playerNumber)
             {
-                return MoveValidationStatus.ERROR_INVALID_PLAYER;
+                return false;
             }
 
             if (!from.IsMoveValid(playerMove))
             {
-                return MoveValidationStatus.ERROR_INVALID_FIGURE_MOVE;
+                return false;
             }
 
             if (to != null && to.PlayerId == from.PlayerId)
             {
-                return MoveValidationStatus.ERROR_FIELD_OCCUPIED;
+                return false;
             }
 
-            return MoveValidationStatus.OK;
+            return true;
         }
 
         public KaNoBuMoveNotificationModel MakeMove(IField field, int playerNumber, KaNoBuMoveResponseModel playerMove)
@@ -315,7 +307,7 @@ namespace TurnBase.KaNoBu
 
             foreach (var moveStep in playerMove.Moves)
             {
-                if(CheckMoveStep(mainField, playerNumber, moveStep) != MoveValidationStatus.OK)
+                if (!IsMoveValid(mainField, playerNumber, moveStep))
                 {
                     continue;
                 }

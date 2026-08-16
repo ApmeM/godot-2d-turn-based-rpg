@@ -81,7 +81,7 @@ public class KaNoBuRulesTests
                 new KaNoBuMoveResponseModel.MoveStep(new Point { X = 0, Y = 2 }, new Point { X = 1, Y = 2 }),
             });
 
-        Assert.That(rules.CheckMove(field, 1, move), Is.EqualTo(MoveValidationStatus.ERROR_INVALID_FIGURE_MOVE));
+        Assert.That(rules.IsMoveValid(field, 1, move), Is.EqualTo(false));
     }
 
     [Test]
@@ -114,7 +114,7 @@ public class KaNoBuRulesTests
                 new KaNoBuMoveResponseModel.MoveStep(new Point { X = 2, Y = 1 }, new Point { X = 2, Y = 2 }),
             });
 
-        Assert.That(rules.CheckMove(field, 1, move), Is.EqualTo(MoveValidationStatus.OK));
+        Assert.That(rules.IsMoveValid(field, 1, move), Is.EqualTo(true));
 
         var notification = rules.MakeMove(field, 1, move);
 

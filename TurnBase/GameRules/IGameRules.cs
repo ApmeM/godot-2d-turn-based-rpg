@@ -18,7 +18,7 @@ namespace TurnBase
     IPlayerRotator GetMoveRotator();
     TMoveResponseModel AutoMove(IField mainField, int playerNumber);
     TMoveModel GetMoveModel(IField mainField, int playerNumber);
-    MoveValidationStatus CheckMove(IField mainField, int playerNumber, TMoveResponseModel move);
+    bool IsMoveValid(IField mainField, int playerNumber, TMoveResponseModel move);
     TMoveNotificationModel MakeMove(IField mainField, int playerNumber, TMoveResponseModel playerMove);
     void TurnCompleted(IField mainField);
     List<int> findWinners(IField mainField);
