@@ -9,6 +9,8 @@ obj/
 build/
 !TurnBase.KaNoBu.Godot/android/build/
 TurnBase.KaNoBu.Godot/android/build/assets/
+TurnBase.KaNoBu.Godot/android/build/build/
 TurnBase.KaNoBu.Godot/android/build/.gradle/
+TurnBase.KaNoBu.Godot/android/build/res/mipmap*
 TurnBase.KaNoBu.Godot/android/build/src/debug/
 TurnBase.KaNoBu.Godot/android/build/src/release/
