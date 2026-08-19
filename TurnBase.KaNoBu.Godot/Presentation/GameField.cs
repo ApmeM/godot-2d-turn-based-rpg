@@ -17,6 +17,7 @@ public partial class GameField :
     private int maxMovesPerTurn = int.MaxValue;
     public List<int> Winners { get; private set; }
     private KaNoBuFieldMemorization memorizedField = new KaNoBuFieldMemorization();
+    private readonly List<Unit> movePreviews = new List<Unit>();
     public IGame<KaNoBuInitModel, KaNoBuInitResponseModel, KaNoBuMoveModel, KaNoBuMoveResponseModel, KaNoBuMoveNotificationModel> Game;
 
     public TileMap Water => this.water;
@@ -51,6 +52,7 @@ public partial class GameField :
             {
                 pendingTurnMoves.Clear();
                 this.ClearSelection();
+                this.ClearMovePreviews();
                 this.UpdateMoveButtons(pendingTurnMoves.Count);
                 this.timerLabel.ShowMessage("Move cancelled. Start again.", 1.5f);
                 continue;
@@ -64,6 +66,7 @@ public partial class GameField :
                 }
 
                 this.moveButtons.Visible = false;
+                this.ClearMovePreviews();
                 var response = new KaNoBuMoveResponseModel(pendingTurnMoves);
                 return new MakeTurnResponseModel<KaNoBuMoveResponseModel>
                 {
@@ -73,6 +76,14 @@ public partial class GameField :
 
             var (from, to) = await moveTask;
             if (from == to)
+            {
+                continue;
+            }
+
+            var movingUnit = this.field.GetChildren()
+                .Cast<Unit>()
+                .FirstOrDefault(a => a.TargetPositionMap == from && a.PlayerNumber == this.playerId);
+            if (movingUnit == null || !movingUnit.GetPossibleMoves().Contains(to - from))
             {
                 continue;
             }
@@ -87,6 +98,7 @@ public partial class GameField :
                 new Point { X = (int)from.x, Y = (int)from.y },
                 new Point { X = (int)to.x, Y = (int)to.y }
             ));
+            this.ShowMovePreview(from, to);
             this.UpdateMoveButtons(pendingTurnMoves.Count);
             this.timerLabel.ShowMessage($"Queued {pendingTurnMoves.Count} move(s).", 1.2f);
         }
@@ -297,6 +309,43 @@ public partial class GameField :
                 a.IsSelected = false;
                 a.RemoveFromGroup(Groups.IsSelected);
             });
+    }
+
+    private async void ShowMovePreview(Vector2 fromMapPos, Vector2 toMapPos)
+    {
+        var unit = this.field.GetChildren()
+            .Cast<Unit>()
+            .FirstOrDefault(a => a.TargetPositionMap == fromMapPos && a.PlayerNumber == this.playerId);
+        if (unit == null)
+        {
+            return;
+        }
+
+        var preview = this.UnitScene.Instance<Unit>();
+        this.field.AddChild(preview);
+        this.movePreviews.Add(preview);
+        preview.PlayerNumber = unit.PlayerNumber;
+        preview.UnitType = unit.UnitType;
+        preview.IsClickable = false;
+        preview.Modulate = new Color(1f, 1f, 1f, 0.35f);
+        preview.ZIndex = 10;
+        preview.Position = unit.Position;
+        await preview.RotateUnitToAction(this.field.MapToWorld(toMapPos) + this.field.CellSize / 2);
+        preview.MoveUnitTo(Vector2.Zero, this.field.MapToWorld(toMapPos) + this.field.CellSize / 2);
+        preview.TargetPositionMap = null;
+    }
+
+    private void ClearMovePreviews()
+    {
+        foreach (var preview in this.movePreviews)
+        {
+            if (Godot.Object.IsInstanceValid(preview))
+            {
+                preview.QueueFree();
+            }
+        }
+
+        this.movePreviews.Clear();
     }
 
     private async void OnUnitClicked(Unit unit)
