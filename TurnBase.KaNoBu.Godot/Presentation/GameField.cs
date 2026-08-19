@@ -37,6 +37,8 @@ public partial class GameField :
         this.memorizedField.SynchronizeField((Field2D)model.Request.Field);
         this.UpdateKnownShips();
         var pendingTurnMoves = new List<KaNoBuMoveResponseModel.MoveStep>();
+        this.moveButtons.Visible = true;
+        this.UpdateMoveButtons(pendingTurnMoves.Count);
 
         while (true)
         {
@@ -49,6 +51,7 @@ public partial class GameField :
             {
                 pendingTurnMoves.Clear();
                 this.ClearSelection();
+                this.UpdateMoveButtons(pendingTurnMoves.Count);
                 this.timerLabel.ShowMessage("Move cancelled. Start again.", 1.5f);
                 continue;
             }
@@ -60,6 +63,7 @@ public partial class GameField :
                     continue;
                 }
 
+                this.moveButtons.Visible = false;
                 var response = new KaNoBuMoveResponseModel(pendingTurnMoves);
                 return new MakeTurnResponseModel<KaNoBuMoveResponseModel>
                 {
@@ -83,7 +87,8 @@ public partial class GameField :
                 new Point { X = (int)from.x, Y = (int)from.y },
                 new Point { X = (int)to.x, Y = (int)to.y }
             ));
-            this.timerLabel.ShowMessage($"Queued {pendingTurnMoves.Count} move(s). Press Enter to confirm or Esc to cancel.", 1.2f);
+            this.UpdateMoveButtons(pendingTurnMoves.Count);
+            this.timerLabel.ShowMessage($"Queued {pendingTurnMoves.Count} move(s).", 1.2f);
         }
     }
 
@@ -323,25 +328,16 @@ public partial class GameField :
         base._Ready();
         this.FillMembers();
         this.AddToGroup(Groups.Field);
+
+        this.sendButton.Connect(CommonSignals.Pressed, this, nameof(SendButtonClicked));
+        this.resetButton.Connect(CommonSignals.Pressed, this, nameof(ResetButtonClicked));
+        this.moveButtons.Visible = false;
+        this.UpdateMoveButtons(0);
     }
 
     public override void _UnhandledInput(InputEvent @event)
     {
         base._UnhandledInput(@event);
-
-        if (@event.IsActionPressed("ui_accept"))
-        {
-            this.GetTree().SetInputAsHandled();
-            this.EmitSignal(nameof(TurnConfirmed));
-            return;
-        }
-
-        if (@event.IsActionPressed("ui_cancel"))
-        {
-            this.GetTree().SetInputAsHandled();
-            this.EmitSignal(nameof(TurnCancelled));
-            return;
-        }
 
         if (@event.IsActionPressed("left_click"))
         {
@@ -356,6 +352,25 @@ public partial class GameField :
             }
             this.ClearSelection();
         }
+    }
+
+    private void SendButtonClicked()
+    {
+        this.EmitSignal(nameof(TurnConfirmed));
+    }
+
+    private void ResetButtonClicked()
+    {
+        this.EmitSignal(nameof(TurnCancelled));
+    }
+
+    private void UpdateMoveButtons(int pendingMoveCount)
+    {
+        var remainingMoves = this.maxMovesPerTurn == int.MaxValue
+            ? "unlimited"
+            : Math.Max(0, this.maxMovesPerTurn - pendingMoveCount).ToString();
+        this.sendButton.Text = $"Send ({remainingMoves})";
+        this.sendButton.Disabled = pendingMoveCount == 0;
     }
 
     public Vector2 WorldToMap(Vector2 position)
