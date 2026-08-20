@@ -19,20 +19,23 @@ tile_data = PoolIntArray( 720895, 2, 0, 655360, 2, 2, 786431, 2, 65536, 720896, 
 [node name="Castle" parent="." index="2"]
 tile_data = PoolIntArray( 720895, 3, 131074, 655360, 3, 262146, 786431, 6, 65539, 720896, 3, 196609, 720898, 3, 131073, 851967, 6, 65539, 786432, 6, 0, 786433, 6, 65539, 786434, 3, 327681, 786435, 3, 262146, 851971, 3, 196609 )
 
-[node name="Player" parent="Field" index="0" instance=ExtResource( 3 )]
-position = Vector2( 85, 670 )
-IsSelected = true
-
-[node name="Level1" parent="Field" index="1" instance=ExtResource( 6 )]
+[node name="Level1" parent="Field" index="0" instance=ExtResource( 6 )]
 position = Vector2( 270, 654 )
 UnitType = 2
 PlayerNumber = 1
 IsClickable = true
 GameToLaunch = ExtResource( 4 )
 
-[node name="Level2" parent="Field" index="2" instance=ExtResource( 6 )]
+[node name="Level2" parent="Field" index="1" instance=ExtResource( 6 )]
 position = Vector2( 443, 600 )
 UnitType = 4
 PlayerNumber = 1
 IsClickable = true
 GameToLaunch = ExtResource( 5 )
+
+[node name="Player" parent="Field" index="2" instance=ExtResource( 3 )]
+position = Vector2( 85, 670 )
+IsSelected = true
+
+[node name="MoveButtons" parent="UIOverlay" index="1"]
+visible = false

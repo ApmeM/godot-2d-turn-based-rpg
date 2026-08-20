@@ -73,11 +73,16 @@ margin_bottom = -16.0
 custom_constants/separation = 12
 
 [node name="SendButton" type="Button" parent="UIOverlay/MoveButtons"]
-rect_min_size = Vector2(174, 56)
+margin_right = 174.0
+margin_bottom = 56.0
+rect_min_size = Vector2( 174, 56 )
 size_flags_horizontal = 3
 text = "Send"
 
 [node name="ResetButton" type="Button" parent="UIOverlay/MoveButtons"]
-rect_min_size = Vector2(174, 56)
+margin_left = 186.0
+margin_right = 360.0
+margin_bottom = 56.0
+rect_min_size = Vector2( 174, 56 )
 size_flags_horizontal = 3
 text = "Reset"

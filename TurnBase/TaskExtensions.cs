@@ -6,7 +6,7 @@ namespace TurnBase
 {
     public static class TaskExtensions
     {
-        public static async Task WrapCancellation(this Task signalTask, CancellationToken cancellationToken)
+        public static async Task WrapCancellation(this Task signalTask, CancellationToken cancellationToken, bool isFail = true)
         {
             if (!cancellationToken.CanBeCanceled)
             {
@@ -20,13 +20,21 @@ namespace TurnBase
 
             if (completed == cancelTask)
             {
+                if(isFail)
+                {
+                    throw new OperationCanceledException(cancellationToken);
+                }
+                else
+                {
+                    return;
+                }
                 throw new OperationCanceledException(cancellationToken);
             }
 
             await signalTask;
         }
 
-        public static async Task<T> WrapCancellation<T>(this Task<T> signalTask, CancellationToken cancellationToken)
+        public static async Task<T> WrapCancellation<T>(this Task<T> signalTask, CancellationToken cancellationToken, bool isFail = true)
         {
             if (!cancellationToken.CanBeCanceled)
             {
@@ -39,7 +47,14 @@ namespace TurnBase
 
             if (completed == cancelTask)
             {
-                throw new OperationCanceledException(cancellationToken);
+                if(isFail)
+                {
+                    throw new OperationCanceledException(cancellationToken);
+                }
+                else
+                {
+                    return default(T);
+                }
             }
 
             return await signalTask;

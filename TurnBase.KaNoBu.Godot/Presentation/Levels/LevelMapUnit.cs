@@ -11,5 +11,6 @@ public partial class LevelMapUnit
     {
         base._Ready();
         this.FillMembers();
+        this.AddToGroup(Groups.LevelButton);
     }
 }

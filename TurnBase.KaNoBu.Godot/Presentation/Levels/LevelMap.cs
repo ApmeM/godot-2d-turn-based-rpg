@@ -10,16 +10,33 @@ public partial class LevelMap
     {
         this.FillMembers();
 
-        this.level1.Connect(nameof(Unit.UnitClicked), this, nameof(OnLevelPressed), new Godot.Collections.Array { this.level1 });
-        this.level2.Connect(nameof(Unit.UnitClicked), this, nameof(OnLevelPressed), new Godot.Collections.Array { this.level2 });
+        foreach (var mapUnit in this.GetTree().GetNodesInGroup(Groups.LevelButton))
+        {
+            if (mapUnit is LevelMapUnit levelMapUnit)
+            {
+                levelMapUnit.Connect(nameof(Unit.UnitClicked), this, nameof(OnLevelPressed), new Godot.Collections.Array { levelMapUnit });
+            }
+        }
+    }
+
+    public override async void _UnhandledInput(InputEvent @event)
+    {
+        if (@event.IsActionPressed("left_click") && @event is InputEventMouseButton mouseEvent)
+        {
+            this.GetTree().SetInputAsHandled();
+            this.player.CancelActions();
+            this.player.RotateUnitTo(mouseEvent.Position);
+            this.player.MoveUnitTo(mouseEvent.Position);
+        }
     }
 
     public async void OnLevelPressed(LevelMapUnit mapUnit)
     {
-        await this.player.RotateUnitToAction(mapUnit.Position);
-        await this.player.MoveUnitToAction(mapUnit.Position - (mapUnit.Position - this.player.Position).Normalized() * 64);
-        await mapUnit.RotateUnitToAction(this.player.Position);
-        this.EmitSignal(nameof(LevelSelected), mapUnit);
+        this.player.CancelActions();
+        this.player.RotateUnitTo(mapUnit.Position);
+        this.player.MoveUnitTo(mapUnit.Position - (mapUnit.Position - this.player.Position).Normalized() * 64);
+        this.player.CallbackForUnit((unit) => mapUnit.RotateUnitToAction(this.player.Position));
+        this.player.CallbackForUnit(async (unit) => this.EmitSignal(nameof(LevelSelected), mapUnit));
     }
 
     public async void LevelFinished(LevelMapUnit mapUnit, bool result)

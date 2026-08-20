@@ -1,8 +1,10 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using TurnBase.KaNoBu;
+using TurnBase;
 
 [Tool]
 [SceneReference("Unit.tscn")]
@@ -14,6 +16,8 @@ public partial class Unit
     private KaNoBuFigure.FigureTypes unitType = KaNoBuFigure.FigureTypes.ShipPaper;
     private int playerNumber = 0;
     private bool isSelected = false;
+
+    private CancellationTokenSource currentActionCancellation = new CancellationTokenSource();
 
     public Vector2? TargetPositionMap;
 
@@ -167,9 +171,9 @@ public partial class Unit
         var texture = (AtlasTexture)this.ship.Texture;
 
         texture.Region = new Rect2(70, texture.Region.Position.y, texture.Region.Size);
-        await this.ToSignal(this.GetTree().CreateTimer(0.3f), "timeout");
+        await this.GetTree().CreateTimer(0.3f).ToMySignal("timeout");
         texture.Region = new Rect2(140, texture.Region.Position.y, texture.Region.Size);
-        await this.ToSignal(this.GetTree().CreateTimer(0.3f), "timeout");
+        await this.GetTree().CreateTimer(0.3f).ToMySignal("timeout");
         texture.Region = new Rect2(210, texture.Region.Position.y, texture.Region.Size);
         this.GetParent().MoveChild(this, 1);
         this.waveGenerator.Stop();
@@ -211,18 +215,23 @@ public partial class Unit
     {
         this.TargetPositionMap = newCell;
         this.PendingTasks.Enqueue(() => MoveUnitToAction(newPosition));
-        this.waveGenerator.Start();
+    }
+
+    public void MoveUnitTo(Vector2 newPosition)
+    {
+        this.PendingTasks.Enqueue(() => MoveUnitToAction(newPosition));
     }
 
     public async Task MoveUnitToAction(Vector2 newPosition)
     {
+        this.waveGenerator.Start();
         const float MOVE_SPEED = 160;
 
         var tween = new Tween();
         this.AddChild(tween);
         tween.InterpolateProperty(this, "position", this.Position, newPosition, (this.Position - newPosition).Length() / MOVE_SPEED);
         tween.Start();
-        await ToSignal(tween, "tween_all_completed");
+        await tween.ToMySignal("tween_all_completed").WrapCancellation(currentActionCancellation.Token, false);
         tween.QueueFree();
     }
 
@@ -253,7 +262,7 @@ public partial class Unit
         this.AddChild(tween);
         tween.InterpolateProperty(this, "rotation", this.Rotation, newRotation, rotationDistance / ROTATION_SPEED);
         tween.Start();
-        await ToSignal(tween, "tween_all_completed");
+        await tween.ToMySignal("tween_all_completed").WrapCancellation(currentActionCancellation.Token, false);
         tween.QueueFree();
     }
 
@@ -265,6 +274,8 @@ public partial class Unit
     public void CancelActions()
     {
         this.PendingTasks.Clear();
+        currentActionCancellation.Cancel();
+        currentActionCancellation = new CancellationTokenSource();
     }
 
     public List<Vector2> GetPossibleMoves()
