@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace TurnBase
         private MultipleGameLogListener<TMoveNotificationModel> gameLogListeners = new MultipleGameLogListener<TMoveNotificationModel>();
 
         public string GameId => "replay_game";
+        public Func<Task> playerTurnDelayAction;
 
         public ReplayGame(List<ICommunicationModel> events)
         {
@@ -54,6 +56,7 @@ namespace TurnBase
                 else if (gameEvent is GamePlayerTurnCommunicationModel<TMoveNotificationModel> gamePlayerTurn)
                 {
                     this.gameLogListeners.GamePlayerTurn(gamePlayerTurn.playerNumber, gamePlayerTurn.notification);
+                    await playerTurnDelayAction?.Invoke();
                 }
                 else if (gameEvent is GameTurnFinishedCommunicationModel gameTurnFinished)
                 {
