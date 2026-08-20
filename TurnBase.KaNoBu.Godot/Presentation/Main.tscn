@@ -1,44 +1,391 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Presentation/Main.cs" type="Script" id=1]
 [ext_resource path="res://gd-draggableCamera/DraggableCamera.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Presentation/CustomField.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Presentation/UI.tscn" type="PackedScene" id=4]
 [ext_resource path="res://gd-popups/CustomPopup.tscn" type="PackedScene" id=5]
+[ext_resource path="res://Presentation/Client.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Presentation/Levels/LevelMap.tscn" type="PackedScene" id=7]
 [ext_resource path="res://Presentation/assets/button-custom.png" type="Texture" id=8]
 [ext_resource path="res://Presentation/assets/button-replay.png" type="Texture" id=9]
 [ext_resource path="res://Presentation/assets/button-mainmenu.png" type="Texture" id=10]
+[ext_resource path="res://Presentation/Server.tscn" type="PackedScene" id=11]
+[ext_resource path="res://Presentation/assets/button-connect.png" type="Texture" id=13]
 
 [node name="Main" type="Node"]
 script = ExtResource( 1 )
 Replay = ExtResource( 3 )
+GameField = ExtResource( 3 )
 
 [node name="LevelMap" parent="." instance=ExtResource( 7 )]
 
 [node name="MainMenu" type="CanvasLayer" parent="."]
 layer = 10
 
-[node name="ScreeButtonContainer" type="VBoxContainer" parent="MainMenu"]
+[node name="ScreenButtonContainer" type="VBoxContainer" parent="MainMenu"]
 anchor_left = 1.0
 anchor_right = 1.0
 margin_left = -120.0
 margin_bottom = 128.0
 
-[node name="MainMenuButton" type="TextureButton" parent="MainMenu/ScreeButtonContainer"]
+[node name="InGameButtonContainer" type="VBoxContainer" parent="MainMenu/ScreenButtonContainer"]
+visible = false
+margin_right = 120.0
+margin_bottom = 40.0
+
+[node name="MainMenuButton" type="TextureButton" parent="MainMenu/ScreenButtonContainer/InGameButtonContainer"]
 margin_right = 120.0
 margin_bottom = 40.0
 texture_normal = ExtResource( 10 )
 
-[node name="CustomButton" type="TextureButton" parent="MainMenu/ScreeButtonContainer"]
-margin_top = 44.0
+[node name="MainMenuPopup" parent="MainMenu/ScreenButtonContainer/InGameButtonContainer/MainMenuButton" instance=ExtResource( 5 )]
+layer = 11
+visible = false
+
+[node name="ExitGameButton" type="Button" parent="MainMenu/ScreenButtonContainer/InGameButtonContainer/MainMenuButton/MainMenuPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin" index="0"]
+margin_left = 9.0
+margin_top = 9.0
+margin_right = 281.0
+margin_bottom = 79.0
+text = "Exit"
+
+[node name="MainScreenButtonContainer" type="VBoxContainer" parent="MainMenu/ScreenButtonContainer"]
 margin_right = 120.0
 margin_bottom = 84.0
+
+[node name="CustomButton" type="TextureButton" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer"]
+margin_right = 120.0
+margin_bottom = 40.0
 texture_normal = ExtResource( 8 )
 texture_pressed = ExtResource( 8 )
 texture_hover = ExtResource( 8 )
 
-[node name="ReplayButton" type="TextureButton" parent="MainMenu/ScreeButtonContainer"]
+[node name="CustomPopup" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton" instance=ExtResource( 5 )]
+visible = false
+Title = "Custom game settings"
+
+[node name="CustomPopupContainer" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup" index="1"]
+margin_left = 29.0
+margin_right = 611.0
+margin_bottom = 382.0
+
+[node name="HeaderCenter" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer" index="0"]
+margin_right = 582.0
+
+[node name="HeaderMargin" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/HeaderCenter" index="0"]
+margin_left = 196.0
+margin_right = 385.0
+
+[node name="TitleBackground" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/HeaderCenter/HeaderMargin" index="0"]
+margin_right = 189.0
+
+[node name="TitleMargin" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/HeaderCenter/HeaderMargin" index="1"]
+margin_right = 189.0
+
+[node name="TitleLabel" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/HeaderCenter/HeaderMargin/TitleMargin" index="0"]
+margin_right = 179.0
+text = "Custom game settings"
+
+[node name="PopupContainer" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer" index="1"]
+margin_right = 582.0
+margin_bottom = 344.0
+
+[node name="MarginContainer" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer" index="0"]
+margin_right = 582.0
+margin_bottom = 323.0
+
+[node name="PopupOuterBackground" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer" index="0"]
+margin_right = 582.0
+margin_bottom = 323.0
+
+[node name="PopupOuterMargin" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer" index="1"]
+margin_right = 582.0
+margin_bottom = 323.0
+
+[node name="PopupInnerBackground" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin" index="0"]
+margin_right = 573.0
+margin_bottom = 314.0
+
+[node name="ContentMargin" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin" index="1"]
+margin_right = 573.0
+margin_bottom = 314.0
+
+[node name="Custom" type="VBoxContainer" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin" index="0"]
+margin_left = 9.0
+margin_top = 9.0
+margin_right = 555.0
+margin_bottom = 296.0
+custom_constants/separation = 10
+
+[node name="ServerMyIpInfo" type="Label" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom"]
+margin_right = 546.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "127.0.0.1"
+autowrap = true
+
+[node name="ServerPlayerSeparator2" type="HSeparator" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom"]
+margin_top = 24.0
+margin_right = 546.0
+margin_bottom = 28.0
+
+[node name="ServerPlayerContainer" type="GridContainer" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom"]
+margin_top = 38.0
+margin_right = 546.0
+margin_bottom = 118.0
+columns = 2
+
+[node name="ServerPlayer1Container" type="VBoxContainer" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerPlayerContainer"]
+margin_right = 150.0
+margin_bottom = 38.0
+
+[node name="LabelServerPlayer1" type="Label" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerPlayerContainer/ServerPlayer1Container"]
+margin_right = 150.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Player red"
+
+[node name="ServerPlayer1" type="OptionButton" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerPlayerContainer/ServerPlayer1Container"]
+margin_top = 18.0
+margin_right = 150.0
+margin_bottom = 38.0
+rect_min_size = Vector2( 150, 0 )
+text = "Human"
+items = [ "None", null, false, 0, null, "Human", null, false, 1, null, "Computer easy", null, false, 2, null, "Remote", null, false, 3, null, "Computer medium", null, false, 4, null ]
+selected = 1
+
+[node name="ServerPlayer2Container" type="VBoxContainer" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerPlayerContainer"]
+margin_left = 154.0
+margin_right = 304.0
+margin_bottom = 38.0
+
+[node name="LabelServerPlayer2" type="Label" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerPlayerContainer/ServerPlayer2Container"]
+margin_right = 150.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Player blue"
+
+[node name="ServerPlayer2" type="OptionButton" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerPlayerContainer/ServerPlayer2Container"]
+margin_top = 18.0
+margin_right = 150.0
+margin_bottom = 38.0
+rect_min_size = Vector2( 150, 0 )
+text = "Computer easy"
+items = [ "None", null, false, 0, null, "Human", null, false, 1, null, "Computer easy", null, false, 2, null, "Remote", null, false, 3, null, "Computer medium", null, false, 4, null ]
+selected = 2
+
+[node name="ServerPlayer3Container" type="VBoxContainer" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerPlayerContainer"]
+margin_top = 42.0
+margin_right = 150.0
+margin_bottom = 80.0
+
+[node name="LabelServerPlayer3" type="Label" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerPlayerContainer/ServerPlayer3Container"]
+margin_right = 150.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Player white"
+
+[node name="ServerPlayer3" type="OptionButton" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerPlayerContainer/ServerPlayer3Container"]
+margin_top = 18.0
+margin_right = 150.0
+margin_bottom = 38.0
+rect_min_size = Vector2( 150, 0 )
+text = "Computer medium"
+items = [ "None", null, false, 0, null, "Human", null, false, 1, null, "Computer easy", null, false, 2, null, "Remote", null, false, 3, null, "Computer medium", null, false, 4, null ]
+selected = 4
+
+[node name="ServerPlayer4Container" type="VBoxContainer" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerPlayerContainer"]
+margin_left = 154.0
+margin_top = 42.0
+margin_right = 304.0
+margin_bottom = 80.0
+
+[node name="LabelServerPlayer4" type="Label" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerPlayerContainer/ServerPlayer4Container"]
+margin_right = 150.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Player gray"
+
+[node name="ServerPlayer4" type="OptionButton" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerPlayerContainer/ServerPlayer4Container"]
+margin_top = 18.0
+margin_right = 150.0
+margin_bottom = 38.0
+rect_min_size = Vector2( 150, 0 )
+text = "Computer medium"
+items = [ "None", null, false, 0, null, "Human", null, false, 1, null, "Computer easy", null, false, 2, null, "Remote", null, false, 3, null, "Computer medium", null, false, 4, null ]
+selected = 4
+
+[node name="ServerPlayerSeparator" type="HSeparator" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom"]
+margin_top = 128.0
+margin_right = 546.0
+margin_bottom = 132.0
+
+[node name="ServerSettingsContainer" type="GridContainer" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom"]
+margin_top = 142.0
+margin_right = 546.0
+margin_bottom = 234.0
+columns = 2
+
+[node name="MapSizeLabel" type="Label" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerSettingsContainer"]
+margin_top = 1.0
+margin_right = 112.0
+margin_bottom = 15.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Map size"
+
+[node name="MapSizeSelector" type="HSlider" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerSettingsContainer"]
+margin_left = 116.0
+margin_right = 266.0
+margin_bottom = 16.0
+rect_min_size = Vector2( 150, 0 )
+min_value = 8.0
+max_value = 20.0
+value = 8.0
+rounded = true
+tick_count = 1
+ticks_on_borders = true
+
+[node name="AllShipVisibleLabel" type="Label" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerSettingsContainer"]
+margin_top = 25.0
+margin_right = 112.0
+margin_bottom = 39.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "All ships visible"
+
+[node name="AllShipsVisibleSelector" type="CheckBox" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerSettingsContainer"]
+margin_left = 116.0
+margin_top = 20.0
+margin_right = 266.0
+margin_bottom = 44.0
+
+[node name="WithDocksLabel" type="Label" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerSettingsContainer"]
+margin_top = 53.0
+margin_right = 112.0
+margin_bottom = 67.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "With docks"
+
+[node name="WithDocksSelector" type="CheckBox" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerSettingsContainer"]
+margin_left = 116.0
+margin_top = 48.0
+margin_right = 266.0
+margin_bottom = 72.0
+
+[node name="MaxMovesPerTurnLabel" type="Label" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerSettingsContainer"]
+margin_top = 77.0
+margin_right = 112.0
+margin_bottom = 91.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Max moves / turn"
+
+[node name="MaxMovesPerTurnSelector" type="HSlider" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom/ServerSettingsContainer"]
+margin_left = 116.0
+margin_top = 76.0
+margin_right = 266.0
+margin_bottom = 92.0
+rect_min_size = Vector2( 150, 0 )
+min_value = 1.0
+max_value = 20.0
+value = 3.0
+rounded = true
+tick_count = 1
+ticks_on_borders = true
+
+[node name="StartCustomButton" type="Button" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Custom"]
+margin_top = 244.0
+margin_right = 546.0
+margin_bottom = 264.0
+text = "Start"
+
+[node name="CloseButton" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin" index="2"]
+margin_left = 526.0
+margin_right = 573.0
+
+[node name="Server" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton" instance=ExtResource( 11 )]
+
+[node name="ConnectButton" type="TextureButton" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer"]
+margin_top = 44.0
+margin_right = 120.0
+margin_bottom = 84.0
+texture_normal = ExtResource( 13 )
+texture_pressed = ExtResource( 13 )
+texture_hover = ExtResource( 13 )
+
+[node name="Client" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton" instance=ExtResource( 6 )]
+
+[node name="ConnectPopup" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton" instance=ExtResource( 5 )]
+visible = false
+Title = "Client settings"
+
+[node name="HeaderMargin" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/HeaderCenter" index="0"]
+margin_left = 90.0
+margin_right = 217.0
+
+[node name="TitleBackground" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/HeaderCenter/HeaderMargin" index="0"]
+margin_right = 127.0
+
+[node name="TitleMargin" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/HeaderCenter/HeaderMargin" index="1"]
+margin_right = 127.0
+
+[node name="TitleLabel" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/HeaderCenter/HeaderMargin/TitleMargin" index="0"]
+margin_right = 117.0
+text = "Client settings"
+
+[node name="PopupContainer" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer" index="1"]
+margin_bottom = 165.0
+
+[node name="MarginContainer" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/PopupContainer" index="0"]
+margin_bottom = 144.0
+
+[node name="PopupOuterBackground" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/PopupContainer/MarginContainer" index="0"]
+margin_bottom = 144.0
+
+[node name="PopupOuterMargin" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/PopupContainer/MarginContainer" index="1"]
+margin_bottom = 144.0
+
+[node name="PopupInnerBackground" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin" index="0"]
+margin_bottom = 135.0
+
+[node name="ContentMargin" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin" index="1"]
+margin_bottom = 135.0
+
+[node name="Connect" type="VBoxContainer" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin" index="0"]
+margin_left = 9.0
+margin_top = 9.0
+margin_right = 281.0
+margin_bottom = 117.0
+
+[node name="ClientMyIpInfo" type="Label" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Connect"]
+margin_right = 272.0
+margin_bottom = 14.0
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "127.0.0.1"
+autowrap = true
+
+[node name="ServerIpInput" type="TextEdit" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Connect"]
+margin_top = 18.0
+margin_right = 272.0
+margin_bottom = 60.0
+rect_min_size = Vector2( 0, 42 )
+rect_clip_content = true
+text = "127.0.0.1"
+
+[node name="ClientPlayer" type="OptionButton" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Connect"]
+margin_top = 64.0
+margin_right = 272.0
+margin_bottom = 84.0
+rect_min_size = Vector2( 150, 0 )
+text = "Human"
+items = [ "None", null, false, 0, null, "Human", null, false, 1, null, "Computer easy", null, false, 2, null, "Remote", null, false, 3, null, "Computer medium", null, false, 4, null ]
+selected = 1
+
+[node name="StartConnectButton" type="Button" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin/Connect"]
+margin_top = 88.0
+margin_right = 272.0
+margin_bottom = 108.0
+text = "Start"
+
+[node name="ReplayButton" type="TextureButton" parent="MainMenu/ScreenButtonContainer/MainScreenButtonContainer"]
 visible = false
 margin_top = 88.0
 margin_right = 120.0
@@ -46,22 +393,6 @@ margin_bottom = 128.0
 texture_normal = ExtResource( 9 )
 texture_pressed = ExtResource( 9 )
 texture_hover = ExtResource( 9 )
-
-[node name="MainMenuPopup" parent="." instance=ExtResource( 5 )]
-layer = 11
-visible = false
-
-[node name="ExitGameButton" type="Button" parent="MainMenuPopup/CustomPopupContainer/PopupContainer/MarginContainer/PopupOuterMargin/ContentMargin" index="0"]
-margin_left = 9.0
-margin_top = 9.0
-margin_right = 281.0
-margin_bottom = 79.0
-text = "Exit"
-
-[node name="UI" parent="." instance=ExtResource( 4 )]
-layer = 11
-visible = false
-GameField = ExtResource( 3 )
 
 [node name="GameOverPopup" parent="." instance=ExtResource( 5 )]
 layer = 11
@@ -111,5 +442,7 @@ maximumZoom = 2.0
 anchor_mode = 0
 current = true
 
-[editable path="MainMenuPopup"]
+[editable path="MainMenu/ScreenButtonContainer/InGameButtonContainer/MainMenuButton/MainMenuPopup"]
+[editable path="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup"]
+[editable path="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/ConnectButton/ConnectPopup"]
 [editable path="GameOverPopup"]
