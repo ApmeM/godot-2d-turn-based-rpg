@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,6 +12,7 @@ namespace TurnBase.KaNoBu
         private Random r = new Random();
         private string name = "Computer easy";
         private int myNumber;
+        private int maxMovesPerTurn = int.MaxValue;
 
         public void GameFinished(List<int> winners)
         {
@@ -46,6 +49,7 @@ namespace TurnBase.KaNoBu
         public async Task<InitResponseModel<KaNoBuInitResponseModel>> Init(InitModel<KaNoBuInitModel> model, CancellationToken token = default)
         {
             this.myNumber = model.PlayerId;
+            this.maxMovesPerTurn = model.Request.MaxMovesPerTurn;
 
             var preparedField = Field2D.Create(model.Request.Width, model.Request.Height);
             for (var i = 0; i < model.Request.Width; i++)
@@ -78,18 +82,32 @@ namespace TurnBase.KaNoBu
                 };
             }
 
-            int movementNum = r.Next(from.Count);
+
+            var selectedMoves = new List<KaNoBuMoveResponseModel.MoveStep>();
+            var movedShips = new HashSet<Point>();
+            while (selectedMoves.Count < this.maxMovesPerTurn)
+            {
+                var availableMoves = from.FindAll(move => !movedShips.Contains(move.from));
+                if (availableMoves.Count == 0)
+                {
+                    break;
+                }
+
+                var movement = availableMoves[r.Next(availableMoves.Count)];
+                selectedMoves.Add(new KaNoBuMoveResponseModel.MoveStep (movement.from, movement.to));
+                movedShips.Add(movement.from);
+            }
 
             return new MakeTurnResponseModel<KaNoBuMoveResponseModel>
             {
-                Response = from[movementNum]
+                Response = new KaNoBuMoveResponseModel(selectedMoves)
             };
         }
 
-        private List<KaNoBuMoveResponseModel> findAllMovement(IField mainField)
+        private List<(Point from, Point to)> findAllMovement(IField mainField)
         {
             var field = (Field2D)mainField;
-            var availableShips = new List<KaNoBuMoveResponseModel>();
+            var availableShips = new List<(Point from, Point to)>();
             for (int x = 0; x < field.Width; x++)
             {
                 for (int y = 0; y < field.Height; y++)
@@ -121,7 +139,7 @@ namespace TurnBase.KaNoBu
             return availableShips;
         }
 
-        private void tryAdd(List<KaNoBuMoveResponseModel> availableShips, IField mainField, Point from, int x, int y)
+        private void tryAdd(List<(Point from, Point to)> availableShips, IField mainField, Point from, int x, int y)
         {
             var field = (Field2D)mainField;
             var to = new Point { X = x, Y = y };
@@ -138,8 +156,7 @@ namespace TurnBase.KaNoBu
             var shipTo = field[to] as KaNoBuFigure;
             if (shipTo == null || shipTo.PlayerId != this.myNumber)
             {
-                availableShips.Add(new KaNoBuMoveResponseModel(
-                    new List<KaNoBuMoveResponseModel.MoveStep> { new KaNoBuMoveResponseModel.MoveStep(from, to) }));
+                availableShips.Add((from, to));
             }
         }
     }

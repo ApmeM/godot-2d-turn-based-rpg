@@ -12,6 +12,7 @@ namespace TurnBase.KaNoBu
         private Random r = new Random();
         private string name = "Computer medium";
         private int myNumber;
+        private int maxMovesPerTurn = int.MaxValue;
 
         private List<Point> directions = new List<Point>
         {
@@ -26,6 +27,7 @@ namespace TurnBase.KaNoBu
         public async Task<InitResponseModel<KaNoBuInitResponseModel>> Init(InitModel<KaNoBuInitModel> model, CancellationToken token = default)
         {
             this.myNumber = model.PlayerId;
+            this.maxMovesPerTurn = model.Request.MaxMovesPerTurn;
 
             var preparedField = Field2D.Create(model.Request.Width, model.Request.Height);
             for (var i = 0; i < model.Request.Width; i++)
@@ -49,7 +51,9 @@ namespace TurnBase.KaNoBu
         {
             this.memorizedField.SynchronizeField((Field2D)model.Request.Field);
             var from = this.findAllMovement(this.memorizedField.Field)
-                    .Select(move => (move, EvaluateMove(this.memorizedField.Field, move))).OrderByDescending(a => a.Item2).ToList();
+                    .Select(move => (move.from, move.to, EvaluateMove(this.memorizedField.Field, move)))
+                    .OrderByDescending(a => a.Item3)
+                    .ToList();
             if (from.Count == 0)
             {
                 return new MakeTurnResponseModel<KaNoBuMoveResponseModel>
@@ -58,24 +62,34 @@ namespace TurnBase.KaNoBu
                 };
             }
 
-            from = from.Where(a => a.Item2 == from[0].Item2).ToList();
-            var result = from[r.Next(from.Count)];
+            var selectedMoves = new List<KaNoBuMoveResponseModel.MoveStep>();
+            var movedShips = new HashSet<Point>();
+            while (selectedMoves.Count < this.maxMovesPerTurn)
+            {
+                var availableMoves = from
+                    .Where(candidate => !movedShips.Contains(candidate.from))
+                    .ToList();
+                if (availableMoves.Count == 0)
+                {
+                    break;
+                }
+
+                var bestScore = availableMoves[0].Item3;
+                var bestMoves = availableMoves.Where(candidate => candidate.Item3 == bestScore).ToList();
+                var move = bestMoves[r.Next(bestMoves.Count)];
+                selectedMoves.Add(new KaNoBuMoveResponseModel.MoveStep(move.from, move.to));
+                movedShips.Add(move.from);
+            }
 
             return new MakeTurnResponseModel<KaNoBuMoveResponseModel>
             {
-                Response = result.move
+                Response = new KaNoBuMoveResponseModel(selectedMoves)
             };
         }
-        private int EvaluateMove(IField mainField, KaNoBuMoveResponseModel a)
+        private int EvaluateMove(IField mainField, (Point from, Point to) move)
         {
-            if (a.Moves.Count == 0)
-            {
-                return 0;
-            }
-            
-            var move = a.Moves[0];
-            var from = move.From;
-            var to = move.To;
+            var from = move.from;
+            var to = move.to;
             
             var field = (Field2D)mainField;
             var shipFrom = field[from] as KaNoBuFigure;
@@ -155,7 +169,7 @@ namespace TurnBase.KaNoBu
             }
         }
 
-        private IEnumerable<KaNoBuMoveResponseModel> findAllMovement(IField mainField)
+        private IEnumerable<(Point from, Point to)> findAllMovement(IField mainField)
         {
             var field = (Field2D)mainField;
             for (int x = 0; x < field.Width; x++)
@@ -195,8 +209,7 @@ namespace TurnBase.KaNoBu
                         var shipTo = field[to] as KaNoBuFigure;
                         if (shipTo == null || shipTo.PlayerId != this.myNumber)
                         {
-                            yield return new KaNoBuMoveResponseModel(
-                                new List<KaNoBuMoveResponseModel.MoveStep> { new KaNoBuMoveResponseModel.MoveStep(from, to) });
+                            yield return (from, to);
                         }
                     }
                 }
