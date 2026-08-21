@@ -10,7 +10,7 @@ using TurnBase;
 [SceneReference("Unit.tscn")]
 public partial class Unit
 {
-    public Queue<Func<Task>> PendingTasks = new Queue<Func<Task>>();
+    public Queue<Func<Task>> PendingAnimations = new Queue<Func<Task>>();
     public Task CurrentTask;
 
     private KaNoBuFigure.FigureTypes unitType = KaNoBuFigure.FigureTypes.ShipPaper;
@@ -19,7 +19,7 @@ public partial class Unit
 
     private CancellationTokenSource currentActionCancellation = new CancellationTokenSource();
 
-    public Vector2? TargetPositionMap;
+    public Vector2? TargetPositionMap {get; private set;}
 
     [Export]
     public bool IsClickable;
@@ -119,7 +119,7 @@ public partial class Unit
     public override void _ExitTree()
     {
         base._ExitTree();
-        this.CancelActions();
+        this.CancelAnimations();
         this.CurrentTask = null;
     }
 
@@ -129,7 +129,7 @@ public partial class Unit
 
         if (!IsInstanceValid(this) || !IsInsideTree())
         {
-            this.CancelActions();
+            this.CancelAnimations();
             this.CurrentTask = null;
             return;
         }
@@ -139,9 +139,9 @@ public partial class Unit
             CurrentTask = null;
         }
 
-        if (CurrentTask == null && PendingTasks.Count > 0)
+        if (CurrentTask == null && PendingAnimations.Count > 0)
         {
-            CurrentTask = PendingTasks.Dequeue().Invoke();
+            CurrentTask = PendingAnimations.Dequeue().Invoke();
         }
     }
 
@@ -158,15 +158,15 @@ public partial class Unit
     }
 
 
-    public void UnitHit()
+    // Changes used by the game logic must happen as soon as the hit is known.
+    // The sinking animation itself can be started later, at the moment of impact.
+    public void UnitHitLogic()
     {
         this.TargetPositionMap = null;
         this.IsDead = true;
-        this.ZIndex = -1;
-        this.PendingTasks.Enqueue(() => UnitHitAction());
     }
 
-    public async Task UnitHitAction()
+    public async Task UnitHitAnimation()
     {
         var texture = (AtlasTexture)this.ship.Texture;
 
@@ -177,11 +177,13 @@ public partial class Unit
         texture.Region = new Rect2(210, texture.Region.Position.y, texture.Region.Size);
         this.GetParent().MoveChild(this, 1);
         this.waveGenerator.Stop();
+        this.ZIndex = -1;
     }
 
-    public void Attack()
+    // Records the non-animation side effects of an attack.  This allows a
+    // battle sequence to await the projectile before starting the hit effect.
+    public void AttackLogic()
     {
-        this.PendingTasks.Enqueue(() => AttackAction());
         var star = (TextureRect)this.starExample.Duplicate();
         star.Visible = true;
         this.stars.AddChild(star);
@@ -191,7 +193,7 @@ public partial class Unit
         }
     }
 
-    public async Task AttackAction()
+    public async Task AttackAnimation()
     {
         const float MOVE_SPEED = 200;
 
@@ -211,18 +213,12 @@ public partial class Unit
         cannonBall.QueueFree();
     }
 
-    public void MoveUnitTo(Vector2 newCell, Vector2 newPosition)
+    public void MoveUnitToLogic(Vector2? newCell)
     {
         this.TargetPositionMap = newCell;
-        this.PendingTasks.Enqueue(() => MoveUnitToAction(newPosition));
     }
 
-    public void MoveUnitTo(Vector2 newPosition)
-    {
-        this.PendingTasks.Enqueue(() => MoveUnitToAction(newPosition));
-    }
-
-    public async Task MoveUnitToAction(Vector2 newPosition)
+    public async Task MoveUnitToAnimation(Vector2 newPosition)
     {
         this.waveGenerator.Start();
         const float MOVE_SPEED = 160;
@@ -235,12 +231,7 @@ public partial class Unit
         tween.QueueFree();
     }
 
-    public void RotateUnitTo(Vector2 lookAtPosition)
-    {
-        this.PendingTasks.Enqueue(() => RotateUnitToAction(lookAtPosition));
-    }
-
-    public async Task RotateUnitToAction(Vector2 lookAtPosition)
+    public async Task RotateUnitToAnimation(Vector2 lookAtPosition)
     {
         var newRotation = (lookAtPosition - this.Position).Angle() - Mathf.Pi / 2;
         var rotationDistance = Math.Abs(newRotation - this.Rotation);
@@ -266,14 +257,14 @@ public partial class Unit
         tween.QueueFree();
     }
 
-    public void CallbackForUnit(Func<Unit, Task> callback)
+    public void CallbackAnimation(Func<Unit, Task> callback)
     {
-        this.PendingTasks.Enqueue(() => callback(this));
+        this.PendingAnimations.Enqueue(() => callback(this));
     }
 
-    public void CancelActions()
+    public void CancelAnimations()
     {
-        this.PendingTasks.Clear();
+        this.PendingAnimations.Clear();
         currentActionCancellation.Cancel();
         currentActionCancellation = new CancellationTokenSource();
     }

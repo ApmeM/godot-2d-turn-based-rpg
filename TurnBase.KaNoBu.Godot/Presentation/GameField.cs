@@ -160,7 +160,8 @@ public partial class GameField :
                     var worldPos = this.field.MapToWorld(mapPos);
                     var unit = (Unit)UnitScene.Instance();
 
-                    unit.TargetPositionMap = mapPos;
+                    unit.MoveUnitToLogic(mapPos);
+
                     unit.Position = worldPos + this.field.CellSize / 2;
                     unit.Connect(nameof(Unit.UnitClicked), this, nameof(OnUnitClicked), new Godot.Collections.Array { unit });
 
@@ -172,7 +173,7 @@ public partial class GameField :
         this.UpdateKnownShips();
     }
 
-    public void GamePlayerTurn(int playerNumber, KaNoBuMoveNotificationModel turnNotification)
+    public async void GamePlayerTurn(int playerNumber, KaNoBuMoveNotificationModel turnNotification)
     {
         this.memorizedField.UpdateKnownShips(turnNotification);
 
@@ -197,25 +198,33 @@ public partial class GameField :
                         break;
                     case KaNoBuMoveNotificationModel.BattleResult.AttackerWon:
                         // Attacker won
-                        movedUnit.RotateUnitTo(toWorldPos);
-                        movedUnit.Attack();
-                        defenderUnit.UnitHit();
-                        movedUnit.MoveUnitTo(toMapPos, toWorldPos);
+                        defenderUnit.UnitHitLogic();
+                        movedUnit.MoveUnitToLogic(toMapPos);
+                        movedUnit.AttackLogic();
+                        movedUnit.CallbackAnimation((unit) => movedUnit.RotateUnitToAnimation(toWorldPos));
+                        movedUnit.CallbackAnimation((unit) => movedUnit.AttackAnimation());
+                        movedUnit.CallbackAnimation((unit) => defenderUnit.UnitHitAnimation());
+                        movedUnit.CallbackAnimation((unit) => movedUnit.MoveUnitToAnimation(toWorldPos));
                         break;
                     case KaNoBuMoveNotificationModel.BattleResult.DefenderWon:
                         // Defender won
                         if (notification.Battle.Value.isMine)
                         {
-                            movedUnit.RotateUnitTo(toWorldPos);
-                            movedUnit.Attack();
-                            movedUnit.UnitHit();
-                            defenderUnit.UnitHit();
+                            movedUnit.UnitHitLogic();
+                            defenderUnit.UnitHitLogic();
+                            movedUnit.AttackLogic();
+                            movedUnit.CallbackAnimation((unit) => movedUnit.RotateUnitToAnimation(toWorldPos));
+                            movedUnit.CallbackAnimation((unit) => movedUnit.AttackAnimation());
+                            movedUnit.CallbackAnimation((unit) => movedUnit.UnitHitAnimation());
+                            movedUnit.CallbackAnimation((unit) => defenderUnit.UnitHitAnimation());
                         }
                         else
                         {
-                            defenderUnit.RotateUnitTo(movedUnit.Position);
-                            defenderUnit.Attack();
-                            movedUnit.UnitHit();
+                            movedUnit.UnitHitLogic();
+                            defenderUnit.AttackLogic();
+                            defenderUnit.CallbackAnimation((unit) => defenderUnit.RotateUnitToAnimation(movedUnit.Position));
+                            defenderUnit.CallbackAnimation((unit) => defenderUnit.AttackAnimation());
+                            defenderUnit.CallbackAnimation((unit) => movedUnit.UnitHitAnimation());
                         }
                         break;
                 }
@@ -223,8 +232,9 @@ public partial class GameField :
             else
             {
                 // No battle - swim here.
-                movedUnit.RotateUnitTo(toWorldPos);
-                movedUnit.MoveUnitTo(toMapPos, toWorldPos);
+                movedUnit.MoveUnitToLogic(toMapPos);
+                movedUnit.CallbackAnimation((unit) => movedUnit.RotateUnitToAnimation(toWorldPos));
+                movedUnit.CallbackAnimation((unit) => movedUnit.MoveUnitToAnimation(toWorldPos));
             }
         }
 
@@ -330,9 +340,8 @@ public partial class GameField :
         preview.Modulate = new Color(1f, 1f, 1f, 0.35f);
         preview.ZIndex = 10;
         preview.Position = unit.Position;
-        await preview.RotateUnitToAction(this.field.MapToWorld(toMapPos) + this.field.CellSize / 2);
-        preview.MoveUnitTo(Vector2.Zero, this.field.MapToWorld(toMapPos) + this.field.CellSize / 2);
-        preview.TargetPositionMap = null;
+        await preview.RotateUnitToAnimation(this.field.MapToWorld(toMapPos) + this.field.CellSize / 2);
+        await preview.MoveUnitToAnimation(this.field.MapToWorld(toMapPos) + this.field.CellSize / 2);
     }
 
     private void ClearMovePreviews()

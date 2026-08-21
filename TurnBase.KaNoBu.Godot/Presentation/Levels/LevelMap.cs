@@ -24,28 +24,28 @@ public partial class LevelMap
         if (@event.IsActionPressed("left_click") && @event is InputEventMouseButton mouseEvent)
         {
             this.GetTree().SetInputAsHandled();
-            this.player.CancelActions();
-            this.player.RotateUnitTo(mouseEvent.Position);
-            this.player.MoveUnitTo(mouseEvent.Position);
+            this.player.CancelAnimations();
+            this.player.CallbackAnimation((unit) => unit.RotateUnitToAnimation(mouseEvent.Position));
+            this.player.CallbackAnimation((unit) => unit.MoveUnitToAnimation(mouseEvent.Position));
         }
     }
 
     public async void OnLevelPressed(LevelMapUnit mapUnit)
     {
-        this.player.CancelActions();
-        this.player.RotateUnitTo(mapUnit.Position);
-        this.player.MoveUnitTo(mapUnit.Position - (mapUnit.Position - this.player.Position).Normalized() * 64);
-        this.player.CallbackForUnit((unit) => mapUnit.RotateUnitToAction(this.player.Position));
-        this.player.CallbackForUnit(async (unit) => this.EmitSignal(nameof(LevelSelected), mapUnit));
+        this.player.CancelAnimations();
+        this.player.CallbackAnimation((unit) => unit.RotateUnitToAnimation(mapUnit.Position));
+        this.player.CallbackAnimation((unit) => unit.MoveUnitToAnimation(mapUnit.Position - (mapUnit.Position - this.player.Position).Normalized() * 64));
+        this.player.CallbackAnimation((unit) => mapUnit.RotateUnitToAnimation(this.player.Position));
+        this.player.CallbackAnimation(async (unit) => this.EmitSignal(nameof(LevelSelected), mapUnit));
     }
 
     public async void LevelFinished(LevelMapUnit mapUnit, bool result)
     {
         if (result)
         {
-            await this.player.AttackAction();
             mapUnit.IsClickable = false;
-            await mapUnit.UnitHitAction();
+            await this.player.AttackAnimation();
+            await mapUnit.UnitHitAnimation();
         }
         else
         {
@@ -61,12 +61,12 @@ public partial class LevelMap
             var newPlayer = scene.Instance<Unit>();;
             this.field.AddChild(newPlayer);
             this.player.Visible = false;
-            await newPlayer.UnitHitAction();
+            await newPlayer.UnitHitAnimation();
             
             this.player.Position = new Vector2(85, 710);
-            await this.player.RotateUnitToAction(new Vector2(85, 670));
+            await this.player.RotateUnitToAnimation(new Vector2(85, 670));
             this.player.Visible = true;
-            await this.player.MoveUnitToAction(new Vector2(85, 670));
+            await this.player.MoveUnitToAnimation(new Vector2(85, 670));
         }
     }
 }
