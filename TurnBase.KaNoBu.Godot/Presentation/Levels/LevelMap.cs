@@ -6,7 +6,7 @@ public partial class LevelMap
     [Signal]
     public delegate void LevelSelected(LevelMapUnit mapUnit);
 
-    public override void _Ready()
+    public override async void _Ready()
     {
         this.FillMembers();
 
@@ -17,6 +17,12 @@ public partial class LevelMap
                 levelMapUnit.Connect(nameof(Unit.UnitClicked), this, nameof(OnLevelPressed), new Godot.Collections.Array { levelMapUnit });
             }
         }
+
+        this.highlitePointer.Show(new Vector2(-1, -1), 1f);
+        await this.dialog.Show("Hello captain! Nice to see you here again. Those enemies are attacking us and we need to defeat them to protect our land!", true, null);
+        this.highlitePointer.Show(new Vector2(270, 654), 50f);
+        await this.dialog.Show("Hello! I'll do my best. Click on this ship to attack them.", false, null);
+        await this.dialog.Show("To arms my brothers!", true, null);
     }
 
     public override async void _UnhandledInput(InputEvent @event)

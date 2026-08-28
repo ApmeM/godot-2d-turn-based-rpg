@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Presentation/Levels/LevelBase.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Presentation/Levels/LevelMap.cs" type="Script" id=2]
@@ -6,6 +6,8 @@
 [ext_resource path="res://Presentation/Levels/Level1.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Presentation/Levels/Level2.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Presentation/Levels/LevelMapUnit.tscn" type="PackedScene" id=6]
+[ext_resource path="res://gd-dialog/Dialog.tscn" type="PackedScene" id=7]
+[ext_resource path="res://gd-highlitePointer/HighlitePointer.tscn" type="PackedScene" id=8]
 
 [node name="LevelMap" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
@@ -39,3 +41,9 @@ IsSelected = true
 
 [node name="MoveButtons" parent="UIOverlay" index="1"]
 visible = false
+
+[node name="Dialog" parent="UIOverlay" index="2" instance=ExtResource( 7 )]
+anchor_top = 1.0
+margin_top = -103.0
+
+[node name="HighlitePointer" parent="." index="6" instance=ExtResource( 8 )]

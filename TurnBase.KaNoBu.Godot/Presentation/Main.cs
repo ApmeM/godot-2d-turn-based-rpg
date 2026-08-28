@@ -36,8 +36,6 @@ public partial class Main
         this.clientMyIpInfo.Text = "Your IP address: " + string.Join(", ", IP.GetLocalAddresses().Cast<string>().Where(a => !a.Contains(":")));
 
         PlayerFailProtection<KaNoBuInitModel, KaNoBuInitResponseModel, KaNoBuMoveModel, KaNoBuMoveResponseModel, KaNoBuMoveNotificationModel>.logger = new GDLogger();
-
-        this.highlitePointer.Show(new Vector2(270, 654), 50f);
     }
 
     private void ShowMainMenuPopup()

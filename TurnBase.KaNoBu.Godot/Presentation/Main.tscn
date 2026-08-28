@@ -1,9 +1,8 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Presentation/Main.cs" type="Script" id=1]
 [ext_resource path="res://gd-draggableCamera/DraggableCamera.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Presentation/CustomField.tscn" type="PackedScene" id=3]
-[ext_resource path="res://gd-highlitePointer/HighlitePointer.tscn" type="PackedScene" id=4]
 [ext_resource path="res://gd-popups/CustomPopup.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Presentation/Client.tscn" type="PackedScene" id=6]
 [ext_resource path="res://Presentation/Levels/LevelMap.tscn" type="PackedScene" id=7]
@@ -442,8 +441,6 @@ maximumZoom = 2.0
 [node name="StaticCamera" type="Camera2D" parent="."]
 anchor_mode = 0
 current = true
-
-[node name="HighlitePointer" parent="." instance=ExtResource( 4 )]
 
 [editable path="MainMenu/ScreenButtonContainer/InGameButtonContainer/MainMenuButton/MainMenuPopup"]
 [editable path="MainMenu/ScreenButtonContainer/MainScreenButtonContainer/CustomButton/CustomPopup"]
