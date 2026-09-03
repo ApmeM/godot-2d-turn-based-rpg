@@ -5,63 +5,6 @@ using System.Text;
 
 namespace TurnBase.KaNoBu
 {
-    public class KaNoBuInitModel
-    {
-        public KaNoBuInitModel(int width, int height, List<KaNoBuFigure.FigureTypes> availableFigures, int maxMovesPerTurn)
-        {
-            Width = width;
-            Height = height;
-            AvailableFigures = availableFigures;
-            MaxMovesPerTurn = maxMovesPerTurn;
-        }
-
-        public readonly List<KaNoBuFigure.FigureTypes> AvailableFigures;
-        public readonly int Width;
-        public readonly int Height;
-        public readonly int MaxMovesPerTurn;
-    }
-
-    public class KaNoBuInitResponseModel
-    {
-        public KaNoBuInitResponseModel(IField field)
-        {
-            Field = field;
-        }
-
-        public readonly IField Field;
-    }
-
-    public class KaNoBuMoveModel
-    {
-        public KaNoBuMoveModel(IField field)
-        {
-            Field = field;
-        }
-
-        public readonly IField Field;
-    }
-
-    public class KaNoBuMoveResponseModel
-    {
-        public struct MoveStep
-        {
-            public MoveStep(Point from, Point to)
-            {
-                From = from;
-                To = to;
-            }
-
-            public readonly Point From;
-            public readonly Point To;
-        }
-
-        public KaNoBuMoveResponseModel(List<MoveStep> moves)
-        {
-            Moves = moves ?? new List<MoveStep>();
-        }
-
-        public readonly List<MoveStep> Moves;
-    }
 
     public class KaNoBuMoveNotificationModel
     {
