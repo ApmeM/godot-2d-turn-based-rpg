@@ -13,8 +13,9 @@ namespace TurnBase
 
         public bool IsAdjacentTo(Point other)
         {
-            return (this.X == other.X && this.Y <= other.Y + 1 && this.Y >= other.Y - 1) ||
-                   (this.Y == other.Y && this.X <= other.X + 1 && this.X >= other.X - 1);
+            return (this.X != other.X || this.Y != other.Y) &&
+                   ((this.X == other.X && this.Y <= other.Y + 1 && this.Y >= other.Y - 1) ||
+                    (this.Y == other.Y && this.X <= other.X + 1 && this.X >= other.X - 1));
         }
 
         public override string ToString()
