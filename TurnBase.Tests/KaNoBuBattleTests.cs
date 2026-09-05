@@ -25,20 +25,6 @@ public class KaNoBuBattleTests
     [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipMine, KaNoBuFigure.FigureTypes.ShipMine)]
     [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipStone)]
 
-    [TestCase(KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipStone)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipPaper)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipScissors)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipFlag, null)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipMine, KaNoBuFigure.FigureTypes.ShipMine)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipUniversal)]
-
-    [TestCase(KaNoBuFigure.FigureTypes.ShipMine, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipMine)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipMine, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipMine)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipMine, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipMine)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipMine, KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipMine)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipMine, KaNoBuFigure.FigureTypes.ShipMine, null)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipMine, KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipMine)]
-
     [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipPaper)]
     [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipScissors)]
     [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipStone)]
@@ -60,5 +46,25 @@ public class KaNoBuBattleTests
 
         Assert.That(winner, Is.Not.Null);
         Assert.That(winner.FigureType, Is.EqualTo(expectedWinnerType.Value));
+    }
+
+    [TestCase(KaNoBuFigure.FigureTypes.ShipFlag)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipMine)]
+    public void FlagAndMineCanNotInitializeBattle(KaNoBuFigure.FigureTypes attackerType)
+    {
+        foreach (KaNoBuFigure.FigureTypes defenderType in System.Enum.GetValues(typeof(KaNoBuFigure.FigureTypes)))
+        {
+            var attacker = KaNoBuFigure.Create(1, attackerType, true, 0);
+            var defender = KaNoBuFigure.Create(2, defenderType, true, 0);
+
+            var exception = Assert.Throws<System.Exception>(() => attacker.ResolveBattle(defender));
+            var expectedMessage = defenderType == KaNoBuFigure.FigureTypes.Unknown
+                ? "Can not resolve battle with unknown ship"
+                : attackerType == KaNoBuFigure.FigureTypes.ShipFlag
+                    ? "Flag can not initialize battle"
+                    : "Mine can not initialize battle";
+
+            Assert.That(exception.Message, Is.EqualTo(expectedMessage));
+        }
     }
 }

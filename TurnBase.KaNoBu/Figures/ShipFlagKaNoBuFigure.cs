@@ -18,12 +18,20 @@ namespace TurnBase.KaNoBu
 
         public override KaNoBuFigure ResolveBattle(KaNoBuFigure defender)
         {
-            if (defender.FigureType == FigureTypes.ShipFlag)
+            switch (defender.FigureType)
             {
-                return null;
+                case FigureTypes.Unknown:
+                    throw new System.Exception("Can not resolve battle with unknown ship");
+                case FigureTypes.ShipStone:
+                case FigureTypes.ShipPaper:
+                case FigureTypes.ShipScissors:
+                case FigureTypes.ShipUniversal:
+                case FigureTypes.ShipMine:
+                case FigureTypes.ShipFlag:
+                    throw new System.Exception("Flag can not initialize battle");
+                default:
+                    throw new System.Exception($"Unsupported figure type {defender.FigureType}");
             }
-
-            return defender;
         }
     }
 }
