@@ -16,7 +16,7 @@ namespace TurnBase.KaNoBu
             return false;
         }
 
-        public override KaNoBuFigure ResolveBattle(KaNoBuFigure defender)
+        public override BattleResolution ResolveBattle(KaNoBuFigure defender)
         {
             switch (defender.FigureType)
             {

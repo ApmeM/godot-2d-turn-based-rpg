@@ -196,6 +196,15 @@ public partial class GameField :
                 {
                     case KaNoBuMoveNotificationModel.BattleResult.Draw:
                         break;
+                    case KaNoBuMoveNotificationModel.BattleResult.BothDestroyed:
+                        movedUnit.UnitHitLogic();
+                        defenderUnit.UnitHitLogic();
+                        movedUnit.AttackLogic();
+                        movedUnit.CallbackAnimation((unit) => movedUnit.RotateUnitToAnimation(toWorldPos));
+                        movedUnit.CallbackAnimation((unit) => movedUnit.AttackAnimation());
+                        movedUnit.CallbackAnimation((unit) => movedUnit.UnitHitAnimation());
+                        movedUnit.CallbackAnimation((unit) => defenderUnit.UnitHitAnimation());
+                        break;
                     case KaNoBuMoveNotificationModel.BattleResult.AttackerWon:
                         // Attacker won
                         defenderUnit.UnitHitLogic();
@@ -208,24 +217,11 @@ public partial class GameField :
                         break;
                     case KaNoBuMoveNotificationModel.BattleResult.DefenderWon:
                         // Defender won
-                        if (notification.Battle.Value.isMine)
-                        {
-                            movedUnit.UnitHitLogic();
-                            defenderUnit.UnitHitLogic();
-                            movedUnit.AttackLogic();
-                            movedUnit.CallbackAnimation((unit) => movedUnit.RotateUnitToAnimation(toWorldPos));
-                            movedUnit.CallbackAnimation((unit) => movedUnit.AttackAnimation());
-                            movedUnit.CallbackAnimation((unit) => movedUnit.UnitHitAnimation());
-                            movedUnit.CallbackAnimation((unit) => defenderUnit.UnitHitAnimation());
-                        }
-                        else
-                        {
-                            movedUnit.UnitHitLogic();
-                            defenderUnit.AttackLogic();
-                            defenderUnit.CallbackAnimation((unit) => defenderUnit.RotateUnitToAnimation(movedUnit.Position));
-                            defenderUnit.CallbackAnimation((unit) => defenderUnit.AttackAnimation());
-                            defenderUnit.CallbackAnimation((unit) => movedUnit.UnitHitAnimation());
-                        }
+                        movedUnit.UnitHitLogic();
+                        defenderUnit.AttackLogic();
+                        defenderUnit.CallbackAnimation((unit) => defenderUnit.RotateUnitToAnimation(movedUnit.Position));
+                        defenderUnit.CallbackAnimation((unit) => defenderUnit.AttackAnimation());
+                        defenderUnit.CallbackAnimation((unit) => movedUnit.UnitHitAnimation());
                         break;
                 }
             }

@@ -86,6 +86,8 @@ namespace TurnBase.KaNoBu
                             this.Field[toMapPos] = defenderUnit;
                             break;
                         }
+                        case KaNoBuMoveNotificationModel.BattleResult.BothDestroyed:
+                            break;
                         case KaNoBuMoveNotificationModel.BattleResult.AttackerWon:
                         {
                             if (movedUnit.FigureType == KaNoBuFigure.FigureTypes.ShipUniversal)
@@ -112,28 +114,21 @@ namespace TurnBase.KaNoBu
                         }
                         case KaNoBuMoveNotificationModel.BattleResult.DefenderWon:
                         {
-                            if (notification.Battle.Value.isMine)
+                            if (defenderUnit.FigureType == KaNoBuFigure.FigureTypes.ShipUniversal)
                             {
-                                defenderUnit = defenderUnit.WithFigureType(KaNoBuFigure.FigureTypes.ShipMine);
+                                defenderUnit = defenderUnit.WithFigureType(KaNoBuFigure.FigureTypes.Unknown);
                             }
-                            else
+
+                            if (movedUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
                             {
-                                if (defenderUnit.FigureType == KaNoBuFigure.FigureTypes.ShipUniversal)
-                                {
-                                    defenderUnit = defenderUnit.WithFigureType(KaNoBuFigure.FigureTypes.Unknown);
-                                }
-
-                                if (movedUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
-                                {
-                                    defenderUnit = defenderUnit.WithFigureType(KaNoBuRules.Winner[movedUnit.FigureType]);
-                                }
-                                if (defenderUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
-                                {
-                                    movedUnit = movedUnit.WithFigureType(KaNoBuRules.Looser[defenderUnit.FigureType]);
-                                }
-
-                                this.Field[toMapPos] = defenderUnit;
+                                defenderUnit = defenderUnit.WithFigureType(KaNoBuRules.Winner[movedUnit.FigureType]);
                             }
+                            if (defenderUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
+                            {
+                                movedUnit = movedUnit.WithFigureType(KaNoBuRules.Looser[defenderUnit.FigureType]);
+                            }
+
+                            this.Field[toMapPos] = defenderUnit;
                             break;
                         }
                     }

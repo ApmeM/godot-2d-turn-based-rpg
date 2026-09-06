@@ -302,13 +302,18 @@ namespace TurnBase.KaNoBu
                 return new KaNoBuMoveNotificationModel.MoveNotification(playerMove.From, playerMove.To);
             }
 
-            var winner = this.battle(from, to);
+            var resolution = this.battle(from, to);
+            var winner = resolution.Winner;
 
-            if (winner != null)
+            if (resolution.Outcome == KaNoBuMoveNotificationModel.BattleResult.BothDestroyed)
             {
                 mainField[playerMove.From] = null;
                 mainField[playerMove.To] = null;
-                mainField[playerMove.To] = winner.FigureType == KaNoBuFigure.FigureTypes.ShipMine ? null : winner;
+            }
+            else if (winner != null)
+            {
+                mainField[playerMove.From] = null;
+                mainField[playerMove.To] = winner;
                 winner.WinNumber++;
                 if (winner.WinNumber % 3 == 0)
                 {
@@ -340,13 +345,8 @@ namespace TurnBase.KaNoBu
 
             var battle = new KaNoBuMoveNotificationModel.Battle
             {
-                battleResult =
-                    winner == null ? KaNoBuMoveNotificationModel.BattleResult.Draw :
-                    winner.PlayerId == from.PlayerId ? KaNoBuMoveNotificationModel.BattleResult.AttackerWon :
-                    winner.PlayerId == to.PlayerId ? KaNoBuMoveNotificationModel.BattleResult.DefenderWon :
-                    throw new Exception("Invalid battle calculation."),
-                isDefenderFlag = to.FigureType == KaNoBuFigure.FigureTypes.ShipFlag,
-                isMine = to.FigureType == KaNoBuFigure.FigureTypes.ShipMine
+                battleResult = resolution.Outcome,
+                isDefenderFlag = to.FigureType == KaNoBuFigure.FigureTypes.ShipFlag
             };
 
             return new KaNoBuMoveNotificationModel.MoveNotification(playerMove.From, playerMove.To, battle);
@@ -377,7 +377,7 @@ namespace TurnBase.KaNoBu
             }
         }
 
-        private KaNoBuFigure battle(KaNoBuFigure attacker, KaNoBuFigure defender)
+        private BattleResolution battle(KaNoBuFigure attacker, KaNoBuFigure defender)
         {
             return attacker.ResolveBattle(defender);
         }

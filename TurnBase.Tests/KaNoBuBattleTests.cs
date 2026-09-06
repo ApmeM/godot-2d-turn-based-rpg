@@ -4,48 +4,55 @@ using TurnBase.KaNoBu;
 [TestFixture]
 public class KaNoBuBattleTests
 {
-    [TestCase(KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipStone, null)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipPaper)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipStone)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipStone)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipMine, KaNoBuFigure.FigureTypes.ShipMine)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipPaper)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipStone, null, KaNoBuMoveNotificationModel.BattleResult.Draw)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuMoveNotificationModel.BattleResult.DefenderWon)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuMoveNotificationModel.BattleResult.AttackerWon)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuMoveNotificationModel.BattleResult.AttackerWon)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipMine, null, KaNoBuMoveNotificationModel.BattleResult.BothDestroyed)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuMoveNotificationModel.BattleResult.DefenderWon)]
 
-    [TestCase(KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipPaper)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipPaper, null)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipScissors)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipPaper)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipMine, KaNoBuFigure.FigureTypes.ShipMine)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipScissors)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuMoveNotificationModel.BattleResult.AttackerWon)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipPaper, null, KaNoBuMoveNotificationModel.BattleResult.Draw)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuMoveNotificationModel.BattleResult.DefenderWon)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuMoveNotificationModel.BattleResult.AttackerWon)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipMine, null, KaNoBuMoveNotificationModel.BattleResult.BothDestroyed)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuMoveNotificationModel.BattleResult.DefenderWon)]
 
-    [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipStone)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipScissors)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipScissors, null)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipScissors)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipMine, KaNoBuFigure.FigureTypes.ShipMine)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipStone)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuMoveNotificationModel.BattleResult.DefenderWon)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuMoveNotificationModel.BattleResult.AttackerWon)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipScissors, null, KaNoBuMoveNotificationModel.BattleResult.Draw)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuMoveNotificationModel.BattleResult.AttackerWon)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipMine, null, KaNoBuMoveNotificationModel.BattleResult.BothDestroyed)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuMoveNotificationModel.BattleResult.DefenderWon)]
 
-    [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipPaper)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipScissors)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipStone)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipUniversal)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipMine, KaNoBuFigure.FigureTypes.ShipMine)]
-    [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipUniversal, null)]
-    public void BattlesAsExpected(KaNoBuFigure.FigureTypes attackerType, KaNoBuFigure.FigureTypes defenderType, KaNoBuFigure.FigureTypes? expectedWinnerType)
+    [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuMoveNotificationModel.BattleResult.AttackerWon)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuMoveNotificationModel.BattleResult.AttackerWon)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipStone, KaNoBuMoveNotificationModel.BattleResult.AttackerWon)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipFlag, KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuMoveNotificationModel.BattleResult.AttackerWon)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipMine, null, KaNoBuMoveNotificationModel.BattleResult.BothDestroyed)]
+    [TestCase(KaNoBuFigure.FigureTypes.ShipUniversal, KaNoBuFigure.FigureTypes.ShipUniversal, null, KaNoBuMoveNotificationModel.BattleResult.Draw)]
+    public void BattlesAsExpected(KaNoBuFigure.FigureTypes attackerType, KaNoBuFigure.FigureTypes defenderType, KaNoBuFigure.FigureTypes? expectedWinnerType, KaNoBuMoveNotificationModel.BattleResult expectedBattleResult)
     {
         var attacker = KaNoBuFigure.Create(1, attackerType, true, 0);
         var defender = KaNoBuFigure.Create(2, defenderType, true, 0);
 
-        var winner = attacker.ResolveBattle(defender);
+        var resolution = attacker.ResolveBattle(defender);
+
+        Assert.That(resolution.Outcome, Is.EqualTo(expectedBattleResult));
 
         if (expectedWinnerType == null)
         {
-            Assert.That(winner, Is.Null);
+            Assert.That(resolution.Winner, Is.Null);
             return;
         }
 
-        Assert.That(winner, Is.Not.Null);
-        Assert.That(winner.FigureType, Is.EqualTo(expectedWinnerType.Value));
+        Assert.That(resolution.Winner, Is.Not.Null);
+        Assert.That(resolution.Winner.FigureType, Is.EqualTo(expectedWinnerType.Value));
+        Assert.That(
+            resolution.Winner.PlayerId,
+            Is.EqualTo(expectedBattleResult == KaNoBuMoveNotificationModel.BattleResult.AttackerWon
+                ? attacker.PlayerId
+                : defender.PlayerId));
     }
 
     [TestCase(KaNoBuFigure.FigureTypes.ShipFlag)]

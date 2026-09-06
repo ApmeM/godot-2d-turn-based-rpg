@@ -16,9 +16,9 @@ namespace TurnBase.KaNoBu
             return false;
         }
 
-        public override KaNoBuFigure ResolveBattle(KaNoBuFigure defender)
+        public override BattleResolution ResolveBattle(KaNoBuFigure defender)
         {
-            return null;
+            throw new System.Exception("Can not resolve battle with unknown ship");
         }
     }
 }

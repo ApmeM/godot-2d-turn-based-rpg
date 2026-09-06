@@ -58,6 +58,27 @@ public class KaNoBuRulesTests
     }
 
     [Test]
+    public void BattleWithMineDestroysBothFigures()
+    {
+        var field = Field2D.Create(2, 2);
+        field[0, 0] = KaNoBuFigure.Create(1, KaNoBuFigure.FigureTypes.ShipStone, true, 0);
+        field[1, 0] = KaNoBuFigure.Create(2, KaNoBuFigure.FigureTypes.ShipMine, true, 0);
+
+        var rules = new KaNoBuRules(6);
+        var move = new KaNoBuMoveResponseModel(
+            new List<KaNoBuMoveResponseModel.MoveStep>
+            {
+                new KaNoBuMoveResponseModel.MoveStep(new Point { X = 0, Y = 0 }, new Point { X = 1, Y = 0 })
+            });
+
+        var notification = rules.MakeMove(field, 1, move);
+
+        Assert.That(notification.MoveNotifications[0].Battle.Value.battleResult, Is.EqualTo(KaNoBuMoveNotificationModel.BattleResult.BothDestroyed));
+        Assert.That(field[0, 0], Is.Null);
+        Assert.That(field[1, 0], Is.Null);
+    }
+
+    [Test]
     public void TurnRejectsMoreFiguresThanAllowedPerTurn()
     {
         var field = Field2D.Create(4, 3);
@@ -138,9 +159,9 @@ public class KaNoBuRulesTests
 
         public override bool IsMoveValid(KaNoBuMoveResponseModel.MoveStep moveStep) => true;
 
-        public override KaNoBuFigure ResolveBattle(KaNoBuFigure defender)
+        public override BattleResolution ResolveBattle(KaNoBuFigure defender)
         {
-            return KaNoBuFigure.Create(this.PlayerId, KaNoBuFigure.FigureTypes.ShipStone, true, 0);
+            return BattleResolution.AttackerWon(KaNoBuFigure.Create(this.PlayerId, KaNoBuFigure.FigureTypes.ShipStone, true, 0));
         }
     }
 }

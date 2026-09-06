@@ -16,22 +16,23 @@ namespace TurnBase.KaNoBu
             return moveStep.From.IsAdjacentTo(moveStep.To);
         }
 
-        public override KaNoBuFigure ResolveBattle(KaNoBuFigure defender)
+        public override BattleResolution ResolveBattle(KaNoBuFigure defender)
         {
             switch (defender.FigureType)
             {
                 case FigureTypes.Unknown:
                     throw new System.Exception("Can not resolve battle with unknown ship");
                 case FigureTypes.ShipScissors:
-                    return null;
+                    return BattleResolution.Draw();
                 case FigureTypes.ShipFlag:
                 case FigureTypes.ShipPaper:
-                    return this;
-                case FigureTypes.ShipMine:
+                    return BattleResolution.AttackerWon(this);
                 case FigureTypes.ShipStone:
-                    return defender;
+                    return BattleResolution.DefenderWon(defender);
+                case FigureTypes.ShipMine:
+                    return BattleResolution.BothAreDestroyed();
                 case FigureTypes.ShipUniversal:
-                    return defender.WithFigureType(FigureTypes.ShipStone);
+                    return BattleResolution.DefenderWon(defender.WithFigureType(FigureTypes.ShipStone));
                 default:
                     throw new System.Exception($"Unsupported figure type {defender.FigureType}");
             }

@@ -63,7 +63,7 @@ namespace TurnBase.KaNoBu
 
         public abstract bool IsMoveValid(KaNoBuMoveResponseModel.MoveStep moveStep);
 
-        public abstract KaNoBuFigure ResolveBattle(KaNoBuFigure defender);
+        public abstract BattleResolution ResolveBattle(KaNoBuFigure defender);
 
         protected static FigureTypes GetTypeThatDefeats(FigureTypes defenderType)
         {
