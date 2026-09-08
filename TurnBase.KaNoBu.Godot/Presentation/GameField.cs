@@ -223,6 +223,8 @@ public partial class GameField :
                         defenderUnit.CallbackAnimation((unit) => defenderUnit.AttackAnimation());
                         defenderUnit.CallbackAnimation((unit) => movedUnit.UnitHitAnimation());
                         break;
+                    default:
+                        throw new Exception($"Unsupported battle result {notification.Battle.Value.battleResult}");
                 }
             }
             else
