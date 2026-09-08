@@ -105,7 +105,11 @@ namespace TurnBase.KaNoBu
                     return 100; // Attack flag enemy
                 }
 
-                if (shipFrom.FigureType == KaNoBuFigure.FigureTypes.ShipUniversal || shipTo.FigureType == KaNoBuRules.Looser[shipFrom.FigureType])
+                if (shipFrom.FigureType == KaNoBuFigure.FigureTypes.ShipUniversal || 
+                    (
+                        shipTo.FigureType != KaNoBuFigure.FigureTypes.Unknown &&
+                        shipFrom.ResolveBattle(shipTo).Outcome == KaNoBuMoveNotificationModel.BattleResult.AttackerWon)
+                    )
                 {
                     return 10; // Attack loosing enemy
                 }

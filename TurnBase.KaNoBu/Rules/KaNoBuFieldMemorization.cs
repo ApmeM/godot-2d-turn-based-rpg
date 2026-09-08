@@ -1,9 +1,24 @@
 using System;
+using System.Collections.Generic;
 
 namespace TurnBase.KaNoBu
 {
     public class KaNoBuFieldMemorization
     {
+        public static readonly Dictionary<KaNoBuFigure.FigureTypes, KaNoBuFigure.FigureTypes> Winner = new Dictionary<KaNoBuFigure.FigureTypes, KaNoBuFigure.FigureTypes>
+        {
+            {KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipScissors},
+            {KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipStone},
+            {KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipPaper},
+        };
+
+        public static readonly Dictionary<KaNoBuFigure.FigureTypes, KaNoBuFigure.FigureTypes> Looser = new Dictionary<KaNoBuFigure.FigureTypes, KaNoBuFigure.FigureTypes>
+        {
+            {KaNoBuFigure.FigureTypes.ShipPaper, KaNoBuFigure.FigureTypes.ShipStone},
+            {KaNoBuFigure.FigureTypes.ShipScissors, KaNoBuFigure.FigureTypes.ShipPaper},
+            {KaNoBuFigure.FigureTypes.ShipStone, KaNoBuFigure.FigureTypes.ShipScissors},
+        };
+        
         public Field2D Field;
 
         public void Clear()
@@ -102,11 +117,11 @@ namespace TurnBase.KaNoBu
                             {
                                 if (movedUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
                                 {
-                                    defenderUnit = defenderUnit.WithFigureType(KaNoBuRules.Looser[movedUnit.FigureType]);
+                                    defenderUnit = defenderUnit.WithFigureType(Looser[movedUnit.FigureType]);
                                 }
                                 if (defenderUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
                                 {
-                                    movedUnit = movedUnit.WithFigureType(KaNoBuRules.Winner[defenderUnit.FigureType]);
+                                    movedUnit = movedUnit.WithFigureType(Winner[defenderUnit.FigureType]);
                                 }
                             }
                             this.Field[toMapPos] = movedUnit;
@@ -121,11 +136,11 @@ namespace TurnBase.KaNoBu
 
                             if (movedUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
                             {
-                                defenderUnit = defenderUnit.WithFigureType(KaNoBuRules.Winner[movedUnit.FigureType]);
+                                defenderUnit = defenderUnit.WithFigureType(Winner[movedUnit.FigureType]);
                             }
                             if (defenderUnit.FigureType != KaNoBuFigure.FigureTypes.Unknown)
                             {
-                                movedUnit = movedUnit.WithFigureType(KaNoBuRules.Looser[defenderUnit.FigureType]);
+                                movedUnit = movedUnit.WithFigureType(Looser[defenderUnit.FigureType]);
                             }
 
                             this.Field[toMapPos] = defenderUnit;
